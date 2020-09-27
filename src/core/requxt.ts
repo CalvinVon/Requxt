@@ -5,6 +5,7 @@ import { Middleware, Adapter, RequxtInstance, RequxtOptions, RequxtMetadata, Req
 export default class Requxt {
     options: RequxtOptions = {};
     onion: Onion = new Onion();
+    adapter: Adapter | null = null;
 
     constructor(options?: RequxtOptions) {
         if (options) {
@@ -14,6 +15,9 @@ export default class Requxt {
 
     public setOptions(options: RequxtOptions) {
         this.options = options;
+        if (this.adapter) {
+            this.adapter.applyOptions(this.options);
+        }
     }
 
     public use(middleware: Middleware) {
@@ -21,10 +25,11 @@ export default class Requxt {
         return this;
     }
 
-    public adapt(adaptor: Adapter) {
-        if (adaptor._adapted) return;
-        adaptor._adapted = true;
-        adaptor.call(null, this);
+    public adapt(adapter: Adapter) {
+        if (adapter._adapted) return;
+        adapter._adapted = true;
+        this.adapter = adapter;
+        adapter.call(null, this);
         return this;
     }
 
@@ -35,20 +40,26 @@ export default class Requxt {
             config?: RequxtConfig
         ) => {
             const options: RequxtOptions = {
+                ...this.options,
                 ...metadata,
                 ...data,
                 ...config
             };
             const ctx = new Context(metadata, options);
             const final = this.onion.compose();
-            return final(ctx)
-                .then(() => {
-                    return ctx.response;
-                })
-                .catch(err => {
-                    throw ctx.response;
-                })
+
+            return new Promise((resolve, reject) => {
+                final(ctx)
+                    .then(() => {
+                        if (ctx.error) {
+                            return reject(ctx.error);
+                        }
+                        resolve(ctx.response);
+                    })
+                    .catch(err => {
+                        reject(err);
+                    })
+            });
         };
     }
-
 }

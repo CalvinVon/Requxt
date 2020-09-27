@@ -1,10 +1,11 @@
-import { RequxtMetadata, RequxtOptions, RequxtResponse, RequxtData, PlainObject } from '../types';
+import { RequxtMetadata, RequxtOptions, RequxtResponse, RequxtData, PlainObject, RequxtError } from '../types';
 
 export default class Context {
 
     private _metadata: RequxtMetadata;
     private _options: RequxtOptions = {};
     private _response: RequxtResponse | null = null;
+    private _error: RequxtError | null = null;
 
     constructor(metadata: RequxtMetadata, options?: RequxtOptions) {
         this._metadata = metadata;
@@ -38,6 +39,15 @@ export default class Context {
 
     set response(value: RequxtResponse | null) {
         this._response = value;
+    }
+
+
+    get error(): RequxtError | null {
+        return this._error;
+    }
+
+    set error(value: RequxtError | null) {
+        this._error = value;
     }
 
 

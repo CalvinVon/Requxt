@@ -1,8 +1,38 @@
-import { Middleware, Adapter, RequxtResponse } from "../types";
+import { Middleware, Adapter, RequxtResponse, RequxtError } from "../types";
 import Context from "../core/context";
 import Requxt from "../core/requxt";
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
+
+function transformAxiosResponse(context: Context, response: AxiosResponse): RequxtResponse {
+    return {
+        data: response.data,
+        headers: response.headers,
+        status: response.status,
+        statusText: response.statusText,
+        options: context.options,
+        originResponse: response
+    };
+}
+
+function transformAxiosError(context: Context, error: AxiosError): RequxtError {
+    const requxtError: RequxtError = {
+        options: context.options,
+        isRequxtError: true,
+        originError: error,
+        message: error.message,
+        name: error.message,
+        code: error.message,
+        stack: error.stack
+    };
+
+    if (error.response) {
+        const response: RequxtResponse = transformAxiosResponse(context, error.response);
+        requxtError.response = response
+    }
+
+    return requxtError;
+}
 
 const coreMiddleware: Middleware = async (context: Context) => {
     return axios({
@@ -11,23 +41,23 @@ const coreMiddleware: Middleware = async (context: Context) => {
         data: context.body,
         params: context.query
     })
-        .then(response => {
-            context.response = {
-                ...response,
-                options: context.options
-            };
+        .then(res => {
+            context.response = transformAxiosResponse(context, res);
         })
         .catch(err => {
-            context.response = err;
+            context.error = transformAxiosError(context, err);
         });
 };
 
 const adapter: Adapter = (requxt: Requxt) => {
-    const options = requxt.options;
+    adapter.applyOptions(requxt.options);
+    requxt.onion.use(coreMiddleware, { core: true });
+};
+
+adapter.applyOptions = (options) => {
     axios.defaults.baseURL = options.baseURL;
     axios.defaults.headers = options.headers;
     axios.defaults.responseType = options.responseType;
-    requxt.onion.use(coreMiddleware, { core: true });
 };
 
 export default adapter;

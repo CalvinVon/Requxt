@@ -32,14 +32,16 @@ export interface RequxtResponse<T = any> {
     statusText: string;
     headers: any;
     options: RequxtOptions;
+    originResponse: any;
 };
 
 export interface RequxtError<T = any> extends Error {
-    config: RequxtOptions;
     code?: string;
     response?: RequxtResponse<T>;
     isRequxtError: boolean;
-};
+    options: RequxtOptions;
+    originError: any;
+}
 
 export interface RequxtMetadata {
     method?: Method;
@@ -96,7 +98,7 @@ export interface RequxtMappingInstance<T = any> {
 
 //#region requxt middleware related
 export interface Middleware {
-    (context: Context, next: NextMiddleware): void;
+    (context: Context, next: NextMiddleware): Promise<any>;
 };
 
 export type NextMiddleware<T = any> = () => Promise<T>;
@@ -110,6 +112,7 @@ export interface FinalMiddleware {
 //#region requxt adapter related
 export interface Adapter {
     (requxt: Requxt): void;
+    applyOptions(options: RequxtOptions): void;
     _adapted?: boolean;
 };
 //#endregion
