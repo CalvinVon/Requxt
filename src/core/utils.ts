@@ -1,4 +1,11 @@
-import { RequxtMetadataMapping, RequxtInstance, RequxtMappingInstance, RequxtOptions } from "../types";
+import {
+    RequxtMetadataMapping,
+    RequxtInstance,
+    RequxtMappingInstance,
+    RequxtOptions,
+    RequxtConfig,
+    RequxtData
+} from "../types";
 import Requxt from "./requxt";
 
 const extend = (options?: RequxtOptions) => {
@@ -10,14 +17,12 @@ const extend = (options?: RequxtOptions) => {
     }
 };
 
-
-
-function mapper<T extends RequxtMetadataMapping>(request: RequxtInstance, metadatas: T): { [P in keyof T]: RequxtMappingInstance } {
+function mapper<T extends RequxtMetadataMapping, K>(request: RequxtInstance<K>, metadatas: T): { [P in keyof T]: RequxtMappingInstance } {
     const mapping = <{ [P in keyof T]: RequxtMappingInstance }>{};
     for (const name in metadatas) {
         const metadata = metadatas[name];
-        mapping[name] = () => {
-            return request(metadata);
+        mapping[name] = (data?: RequxtData | RequxtOptions, config?: RequxtConfig) => {
+            return request(metadata, data, config);
         };
     }
 
@@ -27,4 +32,4 @@ function mapper<T extends RequxtMetadataMapping>(request: RequxtInstance, metada
 export {
     extend,
     mapper
-}
+};

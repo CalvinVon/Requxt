@@ -15,6 +15,11 @@ export default class Context {
 
     }
 
+    /**
+     * Access origin `metadata`
+     * 
+     * 访问定义的 `metadata` 数据
+     */
     set metadata(metadata: RequxtMetadata) {
         this._metadata = metadata;
     }
@@ -24,37 +29,52 @@ export default class Context {
     }
 
 
-    get options(): RequxtOptions {
-        return { ...this._metadata, ...this._options };
-    }
-
+    /**
+     * Access requxt `options`
+     * 
+     * 访问 requxt `options`
+     */
     set options(value: RequxtOptions) {
         this._options = value;
     }
 
+    get options(): RequxtOptions {
+        return { ...this._metadata, ...this._options };
+    }
+
+    
+    /**
+     * Access the `response`
+     * 
+     * 访问响应数据
+     */
+    set response(value: RequxtResponse | null) {
+        this._response = value;
+    }
 
     get response(): RequxtResponse | null {
         return this._response;
     }
 
-    set response(value: RequxtResponse | null) {
-        this._response = value;
+    
+    /**
+     * Access the response `error`
+     * 
+     * 访问响应失败数据
+     */
+    set error(value: RequxtError | null) {
+        this._error = value;
     }
-
 
     get error(): RequxtError | null {
         return this._error;
     }
 
-    set error(value: RequxtError | null) {
-        this._error = value;
-    }
-
 
     /**
-     * Get computed url string
+     * Get computed `url` string
      * 
-     * 获取计算过之后的 url 字符串
+     * 获取计算过之后的 `url` 字符串
      */
     get url() {
         const { url } = this._metadata;
@@ -74,17 +94,15 @@ export default class Context {
         }
     }
 
+    /**
+     * Get request `method`
+     * 
+     * 获取请求 `method`
+     */
     get method() {
         return this.options.method || this.metadata.method;
     }
 
-    get data(): RequxtData {
-        return {
-            query: this.options.query,
-            params: this.options.params,
-            body: this.options.body
-        }
-    }
 
     /**
      * Access request data, including url `query`, url path `params`, request `body` data.
@@ -95,6 +113,14 @@ export default class Context {
         this._options.query = query;
         this._options.params = params;
         this._options.body = body;
+    }
+    
+    get data(): RequxtData {
+        return {
+            query: this.options.query,
+            params: this.options.params,
+            body: this.options.body
+        }
     }
 
 

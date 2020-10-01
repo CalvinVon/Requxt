@@ -11,6 +11,7 @@ function transformAxiosResponse(context: Context, response: AxiosResponse): Requ
         status: response.status,
         statusText: response.statusText,
         options: context.options,
+        fullUrl: context.url,
         originResponse: response
     };
 }
@@ -18,6 +19,7 @@ function transformAxiosResponse(context: Context, response: AxiosResponse): Requ
 function transformAxiosError(context: Context, error: AxiosError): RequxtError {
     const requxtError: RequxtError = {
         options: context.options,
+        fullUrl: context.url,
         isRequxtError: true,
         originError: error,
         message: error.message,

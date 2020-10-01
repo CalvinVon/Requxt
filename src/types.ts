@@ -2,7 +2,7 @@ import Context from "./core/context";
 import Requxt from "./core/requxt";
 
 export interface PlainObject {
-    [props: string]: any;
+    [key: string]: any;
 };
 
 //#region request related
@@ -31,7 +31,11 @@ export interface RequxtResponse<T = any> {
     status: number;
     statusText: string;
     headers: any;
+    /** requxt `options` */
     options: RequxtOptions;
+    /** full `url` after parsed */
+    fullUrl?: string;
+    /** origin response from the `adapter` */
     originResponse: any;
 };
 
@@ -39,7 +43,11 @@ export interface RequxtError<T = any> extends Error {
     code?: string;
     response?: RequxtResponse<T>;
     isRequxtError: boolean;
+    /** requxt `options` */
     options: RequxtOptions;
+    /** full `url` after parsed */
+    fullUrl?: string;
+    /** origin response error from the `adapter` */
     originError: any;
 }
 
@@ -50,20 +58,48 @@ export interface RequxtMetadata {
 };
 
 export interface RequxtData {
+    /**
+     * URL query params
+     * 
+     * 配置 URL 查询参数
+     */
     query?: PlainObject;
+
+    /**
+     * Support URL path dynamic parameters
+     * 
+     * 配置 URL 路径动态参数
+     * 
+     * @example
+     * 
+     * ```js
+     * request({ url: '/user/:id', ... }, { params: { id: 108 } });
+     * ```
+     * is equal to:
+     * 
+     * ```js
+     * const id = 108
+     * request({ url: `/user/${id}`, ... });
+     * ```
+     */
     params?: PlainObject;
+    /**
+     * request body data
+     * 
+     * 配置作为请求体正文发送的数据
+     */
     body?: PlainObject;
     [field: string]: any;
 }
 
+
 // TODO: 抹平配置差异
-export interface RequxtConfig {
+export interface RequxtConfig<T = any> {
     baseURL?: string;
     headers?: any;
 
     timeout?: number;
     timeoutErrorMessage?: string;
-    withCredentials?: boolean;
 
     responseType?: ResponseType;
     xsrfCookieName?: string;
@@ -72,15 +108,21 @@ export interface RequxtConfig {
     onDownloadProgress?: (progressEvent: ProgressEvent) => void;
     validateStatus?: ((status: number) => boolean | null);
 
+    mode?: RequestMode;
+    credentials?: RequestCredentials | boolean;
     // cancelToken?: CancelToken;
+
+    adapterOptions?: T;
 };
 
-export type RequxtOptions = RequxtMetadata & RequxtData & RequxtConfig;
+export type RequxtOptions<T = any> = RequxtMetadata & RequxtData & RequxtConfig<T>;
+
+export interface RequxtPromise<T = any> extends Promise<RequxtResponse<T>> {};
 
 export interface RequxtInstance<T = any> {
-    (metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): Promise<T>;
-    (metadata: RequxtMetadata, options?: RequxtOptions): Promise<T>;
-    (options: RequxtOptions): Promise<T>;
+    (options: RequxtOptions): RequxtPromise<T>;
+    (metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
+    (metadata: RequxtMetadata, options?: RequxtOptions): RequxtPromise<T>;
 };
 //#endregion
 
@@ -91,7 +133,12 @@ export interface RequxtMetadataMapping {
 };
 
 export interface RequxtMappingInstance<T = any> {
-    (options?: RequxtOptions): Promise<T>;
+    (data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
+    (options: RequxtOptions): RequxtPromise<T>;
+};
+
+export interface MetadataCreator {
+    (url: string, fields?: PlainObject): RequxtMetadata;
 };
 //#endregion
 

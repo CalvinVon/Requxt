@@ -1,24 +1,26 @@
-import { adapter, use, request, mapper, RequxtMetadata, extend, setOptions, RequxtError } from ".";
+import { adapter, use, request, mapper, RequxtMetadata, extend, setOptions, RequxtError, RequxtMetadataMapping } from ".";
+import { GET } from "./helper";
 import axiosAdaptor from './adapters/axios';
 import errorHandler from './middlewares/response-error-handler';
 
 adapter(axiosAdaptor);
-// use(async (context, next) => {
-//     console.log('m1 start');
-//     try {
-//         await next();
-//     } catch (error) {
-//         console.log('handler error in outer middleware');
-//         console.log(error.message);
-//     }
-//     console.log('m1 end');
-// });
+use(async (context, next) => {
+    console.log('m1 start');
+    try {
+        await next();
+    } catch (error) {
+        console.log('error in middleware handler');
+        console.log(error.message);
+    }
+    console.log('m1 end');
+});
 use(async (context, next) => {
     console.log('m2 start');
+    context;
     await next();
-    // context.error = context.error?.response as unknown as RequxtError;
     console.log('m2 end');
 });
+
 // use(async (context, next) => {
 //     await next();
 
@@ -34,16 +36,19 @@ setOptions({
     baseURL: 'http://localhost:7000'
 });
 
+
+request({
+    method: 'get',
+    url: '/user/:id/detail',
+    headers: {}
+}).then(res => {
+    res.data
+})
+
 const API = {
-    user: {
-        url: '/user/:id/detail',
-        method: 'get',
-    } as RequxtMetadata,
-    name: {
-        url: '',
-        method: 'get'
-    } as RequxtMetadata,
+    user: GET('/user/:id/detail')
 };
+
 
 
 const res = request(
@@ -54,15 +59,14 @@ const res = request(
         params: { id: 998 }
     }
 );
-// const res = request(API.user, { params: { id: 110 }, headers: {} });
-// const res = request({ params: { id: '007' }, headers: {} });
 
 
 res
     .then(res => {
         console.log(res);
     })
-    .catch(err => {;
+    .catch(err => {
+        ;
         console.log(err);
     })
 
@@ -85,7 +89,13 @@ res
 //     name: string;
 // }
 
-// const req = mapper(request, API);
-// req.name()
+const req = mapper(request, API);
+req.user({ body: { body: 'body' }, params: { id: '998' } }, { headers: { 'x-cus': 'tom' } })
+    .then(res => {
+        console.log(res);
+    })
+    .catch(error => {
+        console.log(error);
+    })
 
 // request(API.name, /**opts */);

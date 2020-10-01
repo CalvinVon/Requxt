@@ -1,5 +1,5 @@
 import Requxt from "./core/requxt";
-import { extend, mapper } from "./core/utils";
+export * from "./core/utils";
 export * from './types';
 
 const instance = new Requxt();
@@ -8,12 +8,9 @@ const adapter = instance.adapt.bind(instance);
 const setOptions = instance.setOptions.bind(instance);
 const request = instance.build();
 
-
 export {
     setOptions,
     request,
     use,
-    adapter,
-    extend,
-    mapper
+    adapter
 };
