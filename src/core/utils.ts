@@ -17,7 +17,7 @@ const extend = (options?: RequxtOptions) => {
     }
 };
 
-function mapper<T extends RequxtMetadataMapping, K>(request: RequxtInstance<K>, metadatas: T): { [P in keyof T]: RequxtMappingInstance } {
+function mapper<T extends RequxtMetadataMapping>(request: RequxtInstance, metadatas: T): { [P in keyof T]: RequxtMappingInstance } {
     const mapping = <{ [P in keyof T]: RequxtMappingInstance }>{};
     for (const name in metadatas) {
         const metadata = metadatas[name];

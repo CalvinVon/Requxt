@@ -1,6 +1,16 @@
 import Context from "./context";
 import { Onion } from "./middleware";
-import { Middleware, Adapter, RequxtInstance, RequxtOptions, RequxtMetadata, RequxtData, RequxtConfig, RequxtResponse } from "../types";
+import {
+    Middleware,
+    Adapter,
+    RequxtInstance,
+    RequxtOptions,
+    RequxtMetadata,
+    RequxtData,
+    RequxtConfig,
+    RequxtResponse,
+    RequxtPromise
+} from "../types";
 
 export default class Requxt {
     options: RequxtOptions = {};
@@ -34,11 +44,12 @@ export default class Requxt {
     }
 
     public build(): RequxtInstance {
-        return (
+        function request<T>(
+            this: Requxt,
             metadata: RequxtMetadata | RequxtOptions,
             data?: RequxtData | RequxtOptions,
             config?: RequxtConfig
-        ) => {
+        ) {
             const options: RequxtOptions = {
                 ...this.options,
                 ...metadata,
@@ -48,18 +59,20 @@ export default class Requxt {
             const ctx = new Context(metadata, options);
             const final = this.onion.compose();
 
-            return new Promise<RequxtResponse>((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 final(ctx)
                     .then(() => {
                         if (ctx.error) {
                             return reject(ctx.error);
                         }
-                        resolve(ctx.response as RequxtResponse);
+                        resolve(ctx.response as RequxtResponse<T>);
                     })
                     .catch(err => {
                         reject(err);
                     })
-            });
+            }) as RequxtPromise<T>;
         };
+
+        return request.bind(this);
     }
 }

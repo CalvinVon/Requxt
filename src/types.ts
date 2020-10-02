@@ -119,10 +119,10 @@ export type RequxtOptions<T = any> = RequxtMetadata & RequxtData & RequxtConfig<
 
 export interface RequxtPromise<T = any> extends Promise<RequxtResponse<T>> {};
 
-export interface RequxtInstance<T = any> {
-    (options: RequxtOptions): RequxtPromise<T>;
-    (metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
-    (metadata: RequxtMetadata, options?: RequxtOptions): RequxtPromise<T>;
+export interface RequxtInstance {
+    <T = any>(options: RequxtOptions): RequxtPromise<T>;
+    <T = any>(metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
+    <T = any>(metadata: RequxtMetadata, options?: RequxtOptions): RequxtPromise<T>;
 };
 //#endregion
 
@@ -132,9 +132,9 @@ export interface RequxtMetadataMapping {
     [name: string]: RequxtMetadata;
 };
 
-export interface RequxtMappingInstance<T = any> {
-    (data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
-    (options: RequxtOptions): RequxtPromise<T>;
+export interface RequxtMappingInstance {
+    <T = any>(data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
+    <T = any>(options: RequxtOptions): RequxtPromise<T>;
 };
 
 export interface MetadataCreator {
@@ -148,7 +148,7 @@ export interface Middleware {
     (context: Context, next: NextMiddleware): Promise<any>;
 };
 
-export type NextMiddleware<T = any> = () => Promise<T>;
+export type NextMiddleware = () => Promise<any>;
 
 export interface FinalMiddleware {
     (context: Context): Promise<any>;

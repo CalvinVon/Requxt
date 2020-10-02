@@ -37,7 +37,8 @@ setOptions({
 });
 
 
-request({
+
+request<{ a: string }>({
     method: 'get',
     url: '/user/:id/detail',
     headers: {}
@@ -71,16 +72,16 @@ res
     })
 
 
-// const instance = extend();
-// instance.use(async (ctx, next) => {
-//     console.log('I am instance 2!');
-//     await next();
-// });
-// instance.adapter(axiosAdaptor);
-// instance.request({
-//     method: 'GET',
-//     url: ''
-// }).then(res => console.log(res))
+const instance = extend();
+instance.use(async (ctx, next) => {
+    console.log('I am instance 2!');
+    await next();
+});
+instance.adapter(axiosAdaptor);
+instance.request({
+    method: 'GET',
+    url: ''
+}).then(res => console.log(res))
 
 
 
