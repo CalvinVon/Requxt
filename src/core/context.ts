@@ -2,72 +2,36 @@ import { RequxtMetadata, RequxtOptions, RequxtResponse, RequxtData, PlainObject,
 
 export default class Context {
 
-    private _metadata: RequxtMetadata;
-    private _options: RequxtOptions = {};
-    private _response: RequxtResponse | null = null;
-    private _error: RequxtError | null = null;
-
-    constructor(metadata: RequxtMetadata, options?: RequxtOptions) {
-        this._metadata = metadata;
-        if (options) {
-            this._options = options;
-        }
-
-    }
+    /**
+     * The `metadata` (partial options) of request
+     * 
+     * 请求元数据（部分选项）
+     */
+    public metadata: Readonly<RequxtOptions> & PlainObject = {};
 
     /**
-     * Access origin `metadata`
+     * The `response` data of request
      * 
-     * 访问定义的 `metadata` 数据
+     * 请求响应数据
      */
-    set metadata(metadata: RequxtMetadata) {
-        this._metadata = metadata;
-    }
-
-    get metadata(): RequxtMetadata {
-        return { ...this._metadata };
-    }
-
+    public response: RequxtResponse | null = null;
 
     /**
-     * Access requxt `options`
+     * The (response) `error` of request
      * 
-     * 访问 requxt `options`
+     * 请求失败数据
      */
-    set options(value: RequxtOptions) {
-        this._options = value;
-    }
+    public error: RequxtError | null = null;
 
-    get options(): RequxtOptions {
-        return { ...this._metadata, ...this._options };
-    }
+    [field: string]: any;
 
-    
-    /**
-     * Access the `response`
-     * 
-     * 访问响应数据
-     */
-    set response(value: RequxtResponse | null) {
-        this._response = value;
-    }
-
-    get response(): RequxtResponse | null {
-        return this._response;
-    }
-
-    
-    /**
-     * Access the response `error`
-     * 
-     * 访问响应失败数据
-     */
-    set error(value: RequxtError | null) {
-        this._error = value;
-    }
-
-    get error(): RequxtError | null {
-        return this._error;
+    constructor(
+        metadata: RequxtMetadata,
+        options: RequxtOptions
+    ) {
+        // avoid to modify origin metadata
+        this.metadata = { ...metadata };
+        this.options = options;
     }
 
 
@@ -77,10 +41,9 @@ export default class Context {
      * 获取计算过之后的 `url` 字符串
      */
     get url() {
-        const { url } = this._metadata;
-        const { params, baseURL } = this.options;
+        const { url, params, baseURL } = this.options;
 
-        if (!url) return this.options.baseURL;
+        if (!url) return baseURL;
 
         if (params) {
             // handle api like /a/:id/b/{param}
@@ -97,10 +60,10 @@ export default class Context {
     /**
      * Get request `method`
      * 
-     * 获取请求 `method`
+     * 获取请求 `方法`
      */
     get method() {
-        return this.options.method || this.metadata.method;
+        return this.options.method;
     }
 
 
@@ -110,11 +73,11 @@ export default class Context {
      * 访问请求数据集合，包括 url 查询参数配置，url 地址参数对配置，请求体数据包配置。
      */
     set data({ query, params, body }: RequxtData) {
-        this._options.query = query;
-        this._options.params = params;
-        this._options.body = body;
+        this.options.query = query;
+        this.options.params = params;
+        this.options.body = body;
     }
-    
+
     get data(): RequxtData {
         return {
             query: this.options.query,
@@ -130,11 +93,11 @@ export default class Context {
      * 访问请求 url 地址参数对配置
      */
     set query(query: PlainObject) {
-        this._options.query = query;
+        this.options.query = query;
     }
 
-    get query() {
-        return this.options.query as PlainObject;
+    get query(): PlainObject {
+        return this.options.query;
     }
 
 
@@ -144,11 +107,11 @@ export default class Context {
      * 访问请求 url 查询参数配置
      */
     set params(params: PlainObject) {
-        this._options.params = params;
+        this.options.params = params;
     }
 
-    get params() {
-        return this._options.params as PlainObject;
+    get params(): PlainObject {
+        return this.options.params;
     }
 
     /**
@@ -157,10 +120,10 @@ export default class Context {
      * 访问请求体数据包配置
      */
     set body(body: PlainObject) {
-        this._options.body = body;
+        this.options.body = body;
     }
 
-    get body() {
-        return this._options.body as PlainObject;
+    get body(): PlainObject {
+        return this.options.body;
     }
 }

@@ -163,3 +163,21 @@ export interface Adapter {
     _adapted?: boolean;
 };
 //#endregion
+
+//#region interceptor
+// export interface Interceptors {
+//     request: {
+//         use: RequestInterceptor;
+//     };
+//     response: {
+//         use: ResponseInterceptor;
+//     };
+// }
+
+// export interface RequestInterceptor {
+//     (options: RequxtOptions): RequxtOptions;
+// };
+// export interface ResponseInterceptor {
+//     (response: , options: RequxtOptions): RequxtOptions;
+// };
+//#region 
