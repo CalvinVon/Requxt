@@ -27,11 +27,13 @@ export default class Context {
 
     constructor(
         metadata: RequxtMetadata,
-        options: RequxtOptions
+        /**
+         * The requxt `options`
+         */
+        public options: RequxtOptions
     ) {
         // avoid to modify origin metadata
         this.metadata = { ...metadata };
-        this.options = options;
     }
 
 
@@ -92,11 +94,7 @@ export default class Context {
      * 
      * 访问请求 url 地址参数对配置
      */
-    set query(query: PlainObject) {
-        this.options.query = query;
-    }
-
-    get query(): PlainObject {
+    get query() {
         return this.options.query;
     }
 
@@ -106,11 +104,7 @@ export default class Context {
      * 
      * 访问请求 url 查询参数配置
      */
-    set params(params: PlainObject) {
-        this.options.params = params;
-    }
-
-    get params(): PlainObject {
+    get params() {
         return this.options.params;
     }
 
@@ -119,11 +113,7 @@ export default class Context {
      * 
      * 访问请求体数据包配置
      */
-    set body(body: PlainObject) {
-        this.options.body = body;
-    }
-
-    get body(): PlainObject {
+    get body() {
         return this.options.body;
     }
 }

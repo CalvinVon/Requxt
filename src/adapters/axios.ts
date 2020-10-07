@@ -1,18 +1,26 @@
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Middleware, Adapter, RequxtResponse, RequxtError } from "../types";
 import Context from "../core/context";
 import Requxt from "../core/requxt";
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { composeInterceptors } from '../core/interceptor';
 
+interface AxiosInterceptorManager<V> {
+    use(onFulfilled?: (value: V) => V | Promise<V>, onRejected?: (error: any) => any): number;
+    eject(id: number): void;
+    handlers: {
+        fulfilled: (value: V) => V | Promise<V>;
+        onRejected: (error: any) => any;
+    }[]
+}
 
 function transformAxiosResponse(context: Context, response: AxiosResponse): RequxtResponse {
     return {
-        data: response.data,
+        data: response,
         headers: response.headers,
         status: response.status,
         statusText: response.statusText,
         options: context.options,
         fullUrl: context.url,
-        originResponse: response
     };
 }
 
@@ -21,7 +29,6 @@ function transformAxiosError(context: Context, error: AxiosError): RequxtError {
         options: context.options,
         fullUrl: context.url,
         isRequxtError: true,
-        originError: error,
         message: error.message,
         name: error.message,
         code: error.message,
@@ -52,8 +59,56 @@ const coreMiddleware: Middleware = async (context: Context) => {
 };
 
 const adapter: Adapter = (requxt: Requxt) => {
-    adapter.applyOptions(requxt.options);
     requxt.onion.use(coreMiddleware, { core: true });
+};
+
+adapter.applyInterceptors = interceptors => {
+    const {
+        request: composedRequestInterceptor,
+        response: composedResponseInterceptor
+    } = composeInterceptors(interceptors);
+
+    const requestInterceptor = (config: AxiosRequestConfig) => {
+        let options;
+        try {
+            options = composedRequestInterceptor<AxiosRequestConfig>(config).options;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+        return options;
+    };
+
+    const responseInterceptor = (response: AxiosResponse) => {
+        let res = response;
+        let options = response.config;
+
+        try {
+            const result = composedResponseInterceptor<AxiosRequestConfig, AxiosResponse>(res, options);
+            res = result.response;
+            options = result.options;
+
+            res.config = options;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+
+        return res;
+    };
+    (axios.interceptors.request as AxiosInterceptorManager<AxiosRequestConfig>).handlers = [
+        {
+            fulfilled: requestInterceptor,
+            onRejected: requestInterceptor
+        }
+    ];
+    (axios.interceptors.response as AxiosInterceptorManager<AxiosResponse>).handlers = [
+        {
+            fulfilled: responseInterceptor,
+            onRejected: responseInterceptor
+        }
+    ];
+
 };
 
 adapter.applyOptions = (options) => {
@@ -63,3 +118,7 @@ adapter.applyOptions = (options) => {
 };
 
 export default adapter;
+export {
+    AxiosRequestConfig,
+    AxiosResponse
+};

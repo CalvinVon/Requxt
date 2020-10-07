@@ -9,13 +9,26 @@ import {
     RequxtData,
     RequxtConfig,
     RequxtResponse,
-    RequxtPromise
+    RequxtPromise,
+    RequestInterceptor,
+    ResponseInterceptor
 } from "../types";
+import { applyAllInterceptors as applyAllInterceptors, composeInterceptors, useInterceptors as useInterceptors } from "./interceptor";
 
 export default class Requxt {
-    options: RequxtOptions = {};
     onion: Onion = new Onion();
-    adapter: Adapter | null = null;
+    options?: RequxtOptions;
+    adapter?: Adapter;
+    interceptors = {
+        request: [] as RequestInterceptor[],
+        response: [] as ResponseInterceptor[]
+    };
+
+    _executeHelper: {
+        adapt?: boolean;
+        setOptions?: boolean;
+        setInterceptors?: boolean;
+    } = {};
 
     constructor(options?: RequxtOptions) {
         if (options) {
@@ -23,41 +36,62 @@ export default class Requxt {
         }
     }
 
-    public setOptions(options: RequxtOptions) {
+    public setOptions(options: RequxtOptions): this {
+        if (this._executeHelper.setOptions) return this;
+        this._executeHelper.setOptions = true;
+
         this.options = options;
-        if (this.adapter) {
-            this.adapter.applyOptions(this.options);
+        if (this._executeHelper.adapt) {
+            this.adapter?.applyOptions(this.options);
         }
+        return this;
     }
 
-    public use(middleware: Middleware) {
+    public use(middleware: Middleware): this {
         this.onion.use(middleware);
         return this;
     }
 
-    public adapt(adapter: Adapter) {
-        if (adapter._adapted) return;
-        adapter._adapted = true;
-        this.adapter = adapter;
+    public adapt(adapter: Adapter): this {
+        if (this._executeHelper.adapt) {
+            console.warn('You can only use one adapter on each instance');
+            return this;
+        }
+        this._executeHelper.adapt = true;
+
+        adapter.applyOptions = (options) => {
+            if (adapter._optionsApplied) return;
+
+            adapter._optionsApplied = true;
+            adapter.applyOptions.call(null, options);
+        };
+        
         adapter.call(null, this);
+        if (this.options) {
+            adapter.applyOptions(this.options);
+        }
+
+        if (this._executeHelper.setInterceptors) {
+            applyAllInterceptors(adapter, this.interceptors);
+        }
+        this.adapter = adapter;
         return this;
     }
 
     public build(): RequxtInstance {
-        function request<T>(
-            this: Requxt,
+        const request: RequxtInstance = <T>(
             metadata: RequxtMetadata | RequxtOptions,
             data?: RequxtData | RequxtOptions,
             config?: RequxtConfig
-        ) {
+        ) => {
             const options: RequxtOptions = {
                 ...this.options,
                 ...metadata,
                 ...data,
                 ...config
             };
-            const ctx = new Context(metadata, options);
             const final = this.onion.compose();
+            const ctx = new Context(metadata, options);
 
             return new Promise((resolve, reject) => {
                 final(ctx)
@@ -73,6 +107,7 @@ export default class Requxt {
             }) as RequxtPromise<T>;
         };
 
-        return request.bind(this);
+        request.interceptors = useInterceptors(this);
+        return request;
     }
 }

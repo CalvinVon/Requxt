@@ -1,36 +1,35 @@
-import { adapter, use, request, mapper, RequxtMetadata, extend, setOptions, RequxtError, RequxtMetadataMapping } from ".";
 import { GET } from "./helper";
-import axiosAdaptor from './adapters/axios';
-import errorHandler from './middlewares/response-error-handler';
+import axiosAdaptor, { AxiosRequestConfig, AxiosResponse } from './adapters/axios';
+import { setAdapter, use, setOptions, request, extend, mapper } from ".";
 
-adapter(axiosAdaptor);
-use(async (context, next) => {
-    console.log('m1 start');
-    try {
-        await next();
-    } catch (error) {
-        console.log('error in middleware handler');
-        console.log(error.message);
-    }
-    console.log('m1 end');
-});
+// setAdapter(axiosAdaptor);
+// use(async (context, next) => {
+//     console.log('m1 start');
+//     try {
+//         await next();
+//     } catch (error) {
+//         console.log('error in middleware handler');
+//         console.log(error.message);
+//     }
+//     console.log('m1 end');
+// });
 use(async (context, next) => {
     console.log('m2 start');
     context.ts = 'ds';
-    context.options.url = '/api';
-    context.body
+    // context.options.url = '/api';
+    context.query
     context.data
     context.metadata.aaa = 'post';
-    context.options = { method: 'PUT', url: '/api/options' };
+    // context.options = { method: 'PUT', url: '/api/options' };
     context.url
     await next();
     console.log('m2 end');
 });
 
-use(async (context, next) => {
-    context.metadata;
-    await next();
-});
+// use(async (context, next) => {
+//     context.metadata;
+//     await next();
+// });
 // use(errorHandler);
 
 
@@ -40,31 +39,57 @@ setOptions({
 });
 
 
-
-// request<{ a: string }>({
-//     method: 'get',
-//     url: '/user/:id/detail',
-//     headers: {},
-//     params: {
-//         id: 108
-//     },
-//     query: {
-//         ts: Date.now()
-//     },
-//     body: {
-//         a: 'b'
-//     }
-// }).then(res => {
-//     res.data
-// })
-
 const API = {
     user: GET('/user/:id/detail')
 };
 
+request.interceptors.request.use((options: AxiosRequestConfig) => {
+    console.log('request interceptor 1');
+    // options.url += '/i0';
+    return {
+        options
+    }
+});
 
+request.interceptors.request.use((options: AxiosRequestConfig) => {
+    console.log('request interceptor 2');
+    // options.url += '/i1';
+    return {
+        options
+    }
+});
 
-const res = request(
+request.interceptors.request.use((options: AxiosRequestConfig) => {
+    console.log('request interceptor 3');
+    // options.url += '/i1';
+    return {
+        options
+    }
+});
+request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConfig) => {
+    console.log('response interceptor 1');
+    options;
+    res;
+    return {
+        options,
+        response: res
+    }
+});
+request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConfig) => {
+    console.log('response interceptor 2');
+    options;
+    res;
+    if (res.data.code !== 200) {
+        throw new Error('不是200！');
+    }
+    return {
+        options,
+        response: res
+    }
+});
+setAdapter(axiosAdaptor);
+
+const res = request<{ a: string }>(
     API.user,
     {
         body: { ok: 1 },
@@ -73,24 +98,25 @@ const res = request(
     }
 );
 
-request(
-    API.user,
-    {
-        body: { ok: 1 },
-        query: { a: 2 },
-        params: { id: 998 }
-    }
-);
+// request(
+//     API.user,
+//     {
+//         body: { ok: 1 },
+//         query: { a: 2 },
+//         params: { id: 998 }
+//     }
+// );
 
 
-// res
-//     .then(res => {
-//         console.log(res);
-//     })
-//     .catch(err => {
-//         ;
-//         console.log(err);
-//     })
+res
+    .then(res => {
+        // console.log(res);
+        console.log('success');
+    })
+    .catch(err => {
+        // console.log(err);
+        console.log('failed');
+    })
 
 
 // const instance = extend();

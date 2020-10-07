@@ -35,8 +35,6 @@ export interface RequxtResponse<T = any> {
     options: RequxtOptions;
     /** full `url` after parsed */
     fullUrl?: string;
-    /** origin response from the `adapter` */
-    originResponse: any;
 };
 
 export interface RequxtError<T = any> extends Error {
@@ -47,8 +45,6 @@ export interface RequxtError<T = any> extends Error {
     options: RequxtOptions;
     /** full `url` after parsed */
     fullUrl?: string;
-    /** origin response error from the `adapter` */
-    originError: any;
 }
 
 export interface RequxtMetadata {
@@ -117,12 +113,16 @@ export interface RequxtConfig<T = any> {
 
 export type RequxtOptions<T = any> = RequxtMetadata & RequxtData & RequxtConfig<T>;
 
-export interface RequxtPromise<T = any> extends Promise<RequxtResponse<T>> {};
+export interface RequxtPromise<T = any> extends Promise<RequxtResponse<T>> { };
 
 export interface RequxtInstance {
     <T = any>(options: RequxtOptions): RequxtPromise<T>;
     <T = any>(metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
     <T = any>(metadata: RequxtMetadata, options?: RequxtOptions): RequxtPromise<T>;
+    interceptors: {
+        request: InterceptorApi;
+        response: InterceptorApi;
+    }
 };
 //#endregion
 
@@ -135,6 +135,7 @@ export interface RequxtMetadataMapping {
 export interface RequxtMappingInstance {
     <T = any>(data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
     <T = any>(options: RequxtOptions): RequxtPromise<T>;
+    originRequest: RequxtInstance;
 };
 
 export interface MetadataCreator {
@@ -157,27 +158,51 @@ export interface FinalMiddleware {
 
 
 //#region requxt adapter related
+/**
+ * An adapter should apply instance options and interceptors to core request,
+ * and implements core middleware(s).
+ * 
+ * 适配器应将实例选项和拦截器应用于核心请求，并实现核心中间件
+ */
 export interface Adapter {
+
     (requxt: Requxt): void;
+
+    /**
+     * Apply interceptors to adapter
+     * 
+     * 将拦截器应用于适配器
+     * @param interceptors interceptors 拦截器集合对象
+     */
+    applyInterceptors(interceptors: Interceptors): void;
+
+    /**
+     * Apply requxt options to the adapter
+     */
     applyOptions(options: RequxtOptions): void;
-    _adapted?: boolean;
+    _optionsApplied?: boolean;
 };
 //#endregion
 
 //#region interceptor
-// export interface Interceptors {
-//     request: {
-//         use: RequestInterceptor;
-//     };
-//     response: {
-//         use: ResponseInterceptor;
-//     };
-// }
 
-// export interface RequestInterceptor {
-//     (options: RequxtOptions): RequxtOptions;
-// };
-// export interface ResponseInterceptor {
-//     (response: , options: RequxtOptions): RequxtOptions;
-// };
-//#region 
+export interface InterceptorApi {
+    use: <T>(handler: T) => number;
+    eject: (id: number) => void;
+    ejectAll: () => void;
+};
+
+
+export interface Interceptors {
+    request: RequestInterceptor[];
+    response: ResponseInterceptor[];
+};
+
+export type Interceptor = RequestInterceptor | ResponseInterceptor;
+export interface RequestInterceptor {
+    <T>(options: T): { options: T };
+};
+export interface ResponseInterceptor {
+    <T, K, P = any>(response: K, options: T): { response: P; options: T; };
+};
+//#region

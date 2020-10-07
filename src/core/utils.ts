@@ -13,7 +13,7 @@ const extend = (options?: RequxtOptions) => {
     return {
         request: ins.build(),
         use: ins.use.bind(ins),
-        adapter: ins.adapt.bind(ins),
+        setAdapter: ins.adapt.bind(ins),
     }
 };
 
@@ -21,9 +21,11 @@ function mapper<T extends RequxtMetadataMapping>(request: RequxtInstance, metada
     const mapping = <{ [P in keyof T]: RequxtMappingInstance }>{};
     for (const name in metadatas) {
         const metadata = metadatas[name];
-        mapping[name] = (data?: RequxtData | RequxtOptions, config?: RequxtConfig) => {
-            return request(metadata, data, config);
+        const mappingRequest = <K>(data?: RequxtData | RequxtOptions, config?: RequxtConfig) => {
+            return request<K>(metadata, data, config);
         };
+        mapping[name] = mappingRequest as RequxtMappingInstance;
+        mapping[name].originRequest = request;
     }
 
     return mapping;
