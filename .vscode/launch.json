@@ -11,10 +11,10 @@
             "args": [
                 // "${relativeFile}"
             ],
-            "program": "${workspaceFolder}/src/test.ts",
+            "program": "${workspaceFolder}/local-test/test.ts",
             "runtimeArgs": [
                 "-r",
-                "ts-node/register"
+                "../local-test/node_modules/ts-node/register"
             ],
             "cwd": "${workspaceRoot}",
             "protocol": "inspector",

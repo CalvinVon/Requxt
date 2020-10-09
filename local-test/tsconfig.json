@@ -9,12 +9,8 @@
             "ESNext",
             "ES2017.Object"
         ],
-        "outDir": "dist"
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "packages/**/*"
-    ],
+    "files": [
+        "test.ts",
+    ]
 }

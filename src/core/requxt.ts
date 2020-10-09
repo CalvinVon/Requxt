@@ -36,6 +36,11 @@ export default class Requxt {
         }
     }
 
+    /**
+     * Set requxt options
+     * 
+     * 为请求实例设置选项
+     */
     public setOptions(options: RequxtOptions): this {
         if (this._executeHelper.setOptions) return this;
         this._executeHelper.setOptions = true;
@@ -47,11 +52,21 @@ export default class Requxt {
         return this;
     }
 
+    /**
+     * Register middleware
+     * 
+     * 注册中间件
+     */
     public use(middleware: Middleware): this {
         this.onion.use(middleware);
         return this;
     }
 
+    /**
+     * Use specific request adaptor
+     * 
+     * 使用特定方案的请求适配器
+     */
     public adapt(adapter: Adapter): this {
         if (this._executeHelper.adapt) {
             console.warn('You can only use one adapter on each instance');
@@ -78,6 +93,12 @@ export default class Requxt {
         return this;
     }
 
+
+    /**
+     * Build requxt request instance
+     * 
+     * 构建 requxt 请求实例
+     */
     public build(): RequxtInstance {
         const request: RequxtInstance = <T>(
             metadata: RequxtMetadata | RequxtOptions,

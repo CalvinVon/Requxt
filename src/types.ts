@@ -140,6 +140,7 @@ export interface RequxtMappingInstance {
 
 export interface MetadataCreator {
     (url: string, fields?: PlainObject): RequxtMetadata;
+    (metadata: RequxtMetadata): RequxtMetadata;
 };
 //#endregion
 
@@ -172,12 +173,13 @@ export interface Adapter {
      * Apply interceptors to adapter
      * 
      * 将拦截器应用于适配器
-     * @param interceptors interceptors 拦截器集合对象
      */
     applyInterceptors(interceptors: Interceptors): void;
 
     /**
      * Apply requxt options to the adapter
+     * 
+     * 将通用选项应用于适配器
      */
     applyOptions(options: RequxtOptions): void;
     _optionsApplied?: boolean;
@@ -187,8 +189,25 @@ export interface Adapter {
 //#region interceptor
 
 export interface InterceptorApi {
+    /**
+     * Add single interceptor
+     * 
+     * 添加单个拦截器
+     */
     use: <T>(handler: T) => number;
+
+    /**
+     * Remove single interceptor by ID
+     * 
+     * 根据 id 移除单个拦截器
+     */
     eject: (id: number) => void;
+
+    /**
+     * Remove all register interceptors
+     * 
+     * 移除所有已添加的拦截器
+     */
     ejectAll: () => void;
 };
 

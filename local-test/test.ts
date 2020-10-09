@@ -1,8 +1,5 @@
-import { GET } from "./helper";
-import axiosAdaptor, { AxiosRequestConfig, AxiosResponse } from './adapters/axios';
-import { setAdapter, use, setOptions, request, extend, mapper } from ".";
+import { AxiosRequestConfig, AxiosResponse, Creators, request, setOptions, use } from 'requxt-axios';
 
-// setAdapter(axiosAdaptor);
 // use(async (context, next) => {
 //     console.log('m1 start');
 //     try {
@@ -40,7 +37,7 @@ setOptions({
 
 
 const API = {
-    user: GET('/user/:id/detail')
+    user: Creators.GET('/user/:id/detail'),
 };
 
 request.interceptors.request.use((options: AxiosRequestConfig) => {
@@ -87,7 +84,6 @@ request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConf
         response: res
     }
 });
-setAdapter(axiosAdaptor);
 
 const res = request<{ a: string }>(
     API.user,

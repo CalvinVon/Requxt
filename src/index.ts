@@ -1,5 +1,7 @@
-import { useInterceptors } from "./core/interceptor";
 import Requxt from "./core/requxt";
+import Context from './core/context';
+import * as Creators from "./creators";
+export * from './core/interceptor';
 export * from "./core/utils";
 export * from './types';
 
@@ -10,8 +12,11 @@ const setOptions = instance.setOptions.bind(instance);
 const request = instance.build();
 
 export {
+    Requxt,
+    Context,
+    Creators,
     request,
     use,
     setAdapter,
-    setOptions
+    setOptions,
 };
