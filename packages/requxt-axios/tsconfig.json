@@ -12,9 +12,7 @@
         "outDir": "dist"
     },
     "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "packages/**/*"
-    ],
+        "src/*",
+        "test.ts"
+    ]
 }

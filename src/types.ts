@@ -140,6 +140,7 @@ export interface RequxtMappingInstance {
 
 export interface MetadataCreator {
     (url: string, fields?: PlainObject): RequxtMetadata;
+    (metadata: RequxtMetadata): RequxtMetadata;
 };
 //#endregion
 
@@ -172,12 +173,13 @@ export interface Adapter {
      * Apply interceptors to adapter
      * 
      * 将拦截器应用于适配器
-     * @param interceptors interceptors 拦截器集合对象
      */
     applyInterceptors(interceptors: Interceptors): void;
 
     /**
      * Apply requxt options to the adapter
+     * 
+     * 将通用选项应用于适配器
      */
     applyOptions(options: RequxtOptions): void;
     _optionsApplied?: boolean;

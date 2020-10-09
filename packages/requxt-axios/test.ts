@@ -1,6 +1,4 @@
-import { GET } from "./helper";
-import axiosAdaptor, { AxiosRequestConfig, AxiosResponse } from './adapters/axios';
-import { setAdapter, use, setOptions, request, extend, mapper } from ".";
+import axiosAdaptor, { AxiosRequestConfig, AxiosResponse, request, setAdapter, setOptions, use, Creators } from './src';
 
 // setAdapter(axiosAdaptor);
 // use(async (context, next) => {
@@ -40,7 +38,7 @@ setOptions({
 
 
 const API = {
-    user: GET('/user/:id/detail')
+    user: Creators.GET('/user/:id/detail'),
 };
 
 request.interceptors.request.use((options: AxiosRequestConfig) => {

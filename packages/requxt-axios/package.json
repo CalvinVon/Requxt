@@ -1,0 +1,19 @@
+{
+  "name": "requxt-axios",
+  "version": "0.0.1",
+  "description": "Requxt using axios adaptor",
+  "main": "index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependenices": {
+    "requxt": "^0.0.1"
+  },
+  "keywords": [
+    "requxt",
+    "axios"
+  ],
+  "author": "calvin_von",
+  "license": "ISC"
+}
