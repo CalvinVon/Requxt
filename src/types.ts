@@ -98,15 +98,22 @@ export interface RequxtConfig<T = any> {
     timeoutErrorMessage?: string;
 
     responseType?: ResponseType;
-    xsrfCookieName?: string;
-    xsrfHeaderName?: string;
     onUploadProgress?: (progressEvent: ProgressEvent) => void;
     onDownloadProgress?: (progressEvent: ProgressEvent) => void;
     validateStatus?: ((status: number) => boolean | null);
 
     mode?: RequestMode;
+    cache?: RequestCache;
     credentials?: RequestCredentials | boolean;
-    // cancelToken?: CancelToken;
+
+    /**
+     * Use AbortController to cancel request
+     */
+    signal?: AbortSignal;
+    /**
+     * Use Cancel Token to cancel request
+     */
+    cancelToken?: CancelToken;
 
     adapterOptions?: T;
 };
@@ -126,6 +133,18 @@ export interface RequxtInstance {
 };
 //#endregion
 
+
+//#region requxt abort related
+export interface Cancel {
+    message: string;
+};
+
+export interface CancelToken {
+    promise: Promise<Cancel>;
+    reason?: Cancel;
+    throwIfRequested(): void;
+};
+//#endregion
 
 //#region requxt utils related
 export interface RequxtMetadataMapping {

@@ -8,8 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "requxt": "../../",
-    "requxt-adapter-axios": "../requxt-adapter-axios"
+    "requxt": "^0.0.1",
+    "requxt-adapter-axios": "^0.0.1"
   },
   "keywords": [
     "requxt",

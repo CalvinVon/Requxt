@@ -21,6 +21,6 @@
     "requxt": "../../"
   },
   "peerDependencies": {
-    "requxt": ">=0.0.0"
+    "requxt": ">=0.0.1"
   }
 }

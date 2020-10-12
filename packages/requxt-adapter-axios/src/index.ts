@@ -4,8 +4,6 @@ import useIntercepter from "./intercepter";
 import useMiddleware from "./middleware";
 import useOptions from "./options";
 
-export * from './intercepter';
-
 const coreMiddleware = useMiddleware(axios);
 const adapter: Adapter = (requxt: Requxt) => {
     requxt.onion.use(coreMiddleware, { core: true });
@@ -14,4 +12,6 @@ const adapter: Adapter = (requxt: Requxt) => {
 adapter.applyInterceptors = useIntercepter(axios);
 adapter.applyOptions = useOptions(axios);
 
+export * from './intercepter';
+export * from 'axios';
 export default adapter;
