@@ -1,8 +1,8 @@
-import Context from "./context";
-import { Onion } from "./middleware";
+import Context from "./Context";
+import Onion from "./Onion";
 import {
     Middleware,
-    Adapter,
+    AdapterInterface,
     RequxtInstance,
     RequxtOptions,
     RequxtMetadata,
@@ -11,14 +11,15 @@ import {
     RequxtResponse,
     RequxtPromise,
     RequestInterceptor,
-    ResponseInterceptor
+    ResponseInterceptor,
+    AdapterConstructor
 } from "../types";
-import { applyAllInterceptors as applyAllInterceptors, composeInterceptors, useInterceptors as useInterceptors } from "./interceptor";
+import { applyAllInterceptors, useInterceptors } from "./interceptor";
 
 export default class Requxt {
     onion: Onion = new Onion();
     options?: RequxtOptions;
-    adapter?: Adapter;
+    adapter?: AdapterInterface;
     interceptors = {
         request: [] as RequestInterceptor[],
         response: [] as ResponseInterceptor[]
@@ -67,21 +68,15 @@ export default class Requxt {
      * 
      * 使用特定方案的请求适配器
      */
-    public adapt(adapter: Adapter): this {
+    public adapt(ctor: AdapterConstructor): this {
         if (this._executeHelper.adapt) {
-            console.warn('You can only use one adapter on each instance');
+            console.warn('You can only instantiate one adapter on each instance');
             return this;
         }
         this._executeHelper.adapt = true;
 
-        adapter.applyOptions = (options) => {
-            if (adapter._optionsApplied) return;
+        const adapter = this.adapter = new ctor(this);
 
-            adapter._optionsApplied = true;
-            adapter.applyOptions.call(null, options);
-        };
-        
-        adapter.call(null, this);
         if (this.options) {
             adapter.applyOptions(this.options);
         }
@@ -89,7 +84,7 @@ export default class Requxt {
         if (this._executeHelper.setInterceptors) {
             applyAllInterceptors(adapter, this.interceptors);
         }
-        this.adapter = adapter;
+        
         return this;
     }
 

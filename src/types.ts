@@ -174,15 +174,20 @@ export interface FinalMiddleware {
 
 
 //#region requxt adapter related
+export interface AdapterConstructor {
+    new(requxt: Requxt): AdapterInterface;
+}
 /**
+ * You should first implement the `AdapterInterface` interface.
+ * 
  * An adapter should apply instance options and interceptors to core request,
  * and implements core middleware(s).
  * 
+ * 编写适配器首先应实现 `AdapterInterface` 接口
+ * 
  * 适配器应将实例选项和拦截器应用于核心请求，并实现核心中间件
  */
-export interface Adapter {
-
-    (requxt: Requxt): void;
+export interface AdapterInterface {
 
     /**
      * Apply interceptors to adapter
@@ -197,8 +202,8 @@ export interface Adapter {
      * 将通用选项应用于适配器
      */
     applyOptions(options: RequxtOptions): void;
-    _optionsApplied?: boolean;
 };
+
 //#endregion
 
 //#region interceptor

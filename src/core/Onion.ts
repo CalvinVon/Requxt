@@ -1,7 +1,7 @@
 import { Middleware, FinalMiddleware } from "../types";
 import { compose } from "./compose";
 
-export class Onion {
+export default class Onion {
     middlewares: Middleware[] = [];
     coreMiddlewares: Middleware[] = [];
 

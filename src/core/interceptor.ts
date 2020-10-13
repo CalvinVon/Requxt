@@ -1,4 +1,4 @@
-import { Adapter, Interceptors, InterceptorApi, RequestInterceptor, ResponseInterceptor } from "../types";
+import { Interceptors, InterceptorApi, RequestInterceptor, ResponseInterceptor, AdapterInterface } from "../types";
 import Requxt from "./requxt";
 
 const noopRequestInterceptor: RequestInterceptor = (options: any) => ({ options });
@@ -67,7 +67,7 @@ export function useInterceptors(instance: Requxt) {
 }
 
 
-export function applyAllInterceptors(adapter: Adapter, interceptors: Interceptors) {
+export function applyAllInterceptors(adapter: AdapterInterface, interceptors: Interceptors) {
     const { request, response } = interceptors;
     request.forEach(it => adapter.applyInterceptors(interceptors));
     response.forEach(it => adapter.applyInterceptors(interceptors));
