@@ -1,12 +1,12 @@
 import { setAdapter } from "requxt";
-import axiosAdaptor, {
+import AxiosAdaptor, {
     AxiosRequestConfig,
     AxiosResponse,
     AbortController,
     AbortSignal
 } from "requxt-adapter-axios";
 
-setAdapter(axiosAdaptor);
+setAdapter(AxiosAdaptor);
 
 export * from 'requxt';
 export {
