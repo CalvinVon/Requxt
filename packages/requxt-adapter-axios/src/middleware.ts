@@ -1,4 +1,4 @@
-import { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Context, Middleware, RequxtError, RequxtOptions, RequxtResponse } from "requxt";
 
 function transformAxiosConfig(context: Context): AxiosRequestConfig {
@@ -6,6 +6,7 @@ function transformAxiosConfig(context: Context): AxiosRequestConfig {
         cache,
         credentials,
         adapterOptions,
+        signal
     } = context.options as RequxtOptions<AxiosRequestConfig>;
 
     const options: AxiosRequestConfig = {
@@ -40,6 +41,16 @@ function transformAxiosConfig(context: Context): AxiosRequestConfig {
                 options.url += (reQueryString.test(options.url || '') ? '&' : '?') + '_=' + new Date().getTime();
             }
         }
+    }
+
+
+    // adapter signal
+    if (signal) {
+        const { cancel, token } = axios.CancelToken.source();
+        signal.addEventListener('abort', () => {
+            cancel('The user aborted a request.');
+        });
+        options.cancelToken = token;
     }
 
     return options;

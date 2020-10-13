@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, AxiosResponse, Creators, request, setOptions, use } from 'requxt-axios';
+import { AbortController, AxiosRequestConfig, AxiosResponse, Creators, request, setOptions, use } from 'requxt-axios';
 
 // use(async (context, next) => {
 //     console.log('m1 start');
@@ -85,12 +85,20 @@ request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConf
     }
 });
 
+const controller = new AbortController();
+setTimeout(() => {
+    controller.abort();
+}, 100);
+
 const res = request<{ a: string }>(
     API.user,
     {
         body: { ok: 1 },
         query: { a: 2 },
         params: { id: 998 }
+    },
+    {
+        signal: controller.signal
     }
 );
 
@@ -110,7 +118,7 @@ res
         console.log('success');
     })
     .catch(err => {
-        // console.log(err);
+        console.log(err);
         console.log('failed');
     })
 

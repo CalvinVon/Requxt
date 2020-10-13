@@ -13,5 +13,6 @@ adapter.applyInterceptors = useIntercepter(axios);
 adapter.applyOptions = useOptions(axios);
 
 export * from './intercepter';
+export * from './abort-controller';
 export * from 'axios';
 export default adapter;

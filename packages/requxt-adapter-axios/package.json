@@ -15,6 +15,7 @@
   "author": "calvin_von",
   "license": "ISC",
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "axios": "^0.20.0"
   },
   "devDependencies": {

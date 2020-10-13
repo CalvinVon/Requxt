@@ -110,10 +110,6 @@ export interface RequxtConfig<T = any> {
      * Use AbortController to cancel request
      */
     signal?: AbortSignal;
-    /**
-     * Use Cancel Token to cancel request
-     */
-    cancelToken?: CancelToken;
 
     adapterOptions?: T;
 };
