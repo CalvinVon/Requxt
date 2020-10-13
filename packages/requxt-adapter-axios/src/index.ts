@@ -1,18 +1,24 @@
-import { Adapter, Requxt } from "requxt";
+import { AdapterInterface, Interceptors, Requxt, RequxtOptions } from "requxt";
 import axios from 'axios';
-import useIntercepter from "./intercepter";
-import useMiddleware from "./middleware";
-import useOptions from "./options";
+import applyIntercepter from "./intercepter";
+import applyMiddleware from "./middleware";
+import applyOptions from "./options";
 
-const coreMiddleware = useMiddleware(axios);
-const adapter: Adapter = (requxt: Requxt) => {
-    requxt.onion.use(coreMiddleware, { core: true });
-};
+class AxiosAdapter implements AdapterInterface {
+    constructor(requxt: Requxt) {
+        const coreMiddleware = applyMiddleware(axios);
+        requxt.onion.use(coreMiddleware, { core: true });
+    };
+    applyInterceptors(interceptors: Interceptors) {
+        applyIntercepter(axios, interceptors);
+    }
+    applyOptions(options: RequxtOptions) {
+        applyOptions(axios, options);
+    }
+}
 
-adapter.applyInterceptors = useIntercepter(axios);
-adapter.applyOptions = useOptions(axios);
 
 export * from './intercepter';
 export * from './abort-controller';
 export * from 'axios';
-export default adapter;
+export default AxiosAdapter;

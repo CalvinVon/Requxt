@@ -87,19 +87,18 @@ function transformAxiosError(context: Context, error: AxiosError): RequxtError {
     return requxtError;
 }
 
-const useMiddleware = (axios: AxiosInstance) => {
+const applyMiddleware = (axios: AxiosInstance) => {
     const coreMiddleware: Middleware = async (context: Context) => {
         const axiosConfig: AxiosRequestConfig = transformAxiosConfig(context);
-        return axios(axiosConfig)
-            .then(res => {
-                context.response = transformAxiosResponse(context, res);
-            })
-            .catch(err => {
-                context.error = transformAxiosError(context, err);
-            });
+        try {
+            const res = await axios(axiosConfig);
+            context.response = transformAxiosResponse(context, res);
+        } catch (err) {
+            context.error = transformAxiosError(context, err);
+        }
     };
 
     return coreMiddleware;
 };
 
-export default useMiddleware;
+export default applyMiddleware;
