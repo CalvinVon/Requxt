@@ -1,0 +1,16 @@
+{
+  "name": "mp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dayjs": "^1.9.3",
+    "requxt-mp": "^0.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
