@@ -84,7 +84,7 @@ export interface RequxtData {
      * 
      * 配置作为请求体正文发送的数据
      */
-    body?: PlainObject;
+    body?: BodyInit;
     [field: string]: any;
 }
 

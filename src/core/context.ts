@@ -43,19 +43,19 @@ export default class Context {
      * 获取计算过之后的 `url` 字符串
      */
     get url() {
-        const { url, params, baseURL } = this.options;
+        const { url, params, baseURL = '' } = this.options;
 
         if (!url) return baseURL;
 
         if (params) {
             // handle api like /a/:id/b/{param}
-            return (baseURL || '') + url
+            return baseURL + url
                 .replace(/\B(?::(\w+)|{(\w+)})/g, (...args: string[]) => {
                     return params[args[1] || args[2]];
                 });
         }
         else {
-            return (baseURL || '') + url;
+            return baseURL + url;
         }
     }
 
