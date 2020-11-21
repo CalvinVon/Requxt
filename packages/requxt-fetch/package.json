@@ -1,0 +1,20 @@
+{
+  "name": "requxt-fetch",
+  "version": "0.0.1",
+  "description": "Requxt with fetch",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "requxt": "^0.0.1",
+    "requxt-adapter-fetch": "^0.0.1"
+  },
+  "keywords": [
+    "requxt",
+    "fetch"
+  ],
+  "author": "calvin_von",
+  "license": "ISC"
+}
