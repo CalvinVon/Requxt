@@ -1,6 +1,9 @@
 import Context from "./core/context";
 import Requxt from "./core/requxt";
 
+export type RequxtQuery = PlainObject;
+export type RequxtParams = PlainObject;
+export type RequxtBody = PlainObject | BodyInit;
 export interface PlainObject {
     [key: string]: any;
 };
@@ -26,8 +29,8 @@ export type ResponseType =
     | 'text'
     | 'stream';
 
-export interface RequxtResponse<T = any> {
-    data: T;
+export interface RequxtResponse<T = any, K = any> {
+    data: K;
     status: number;
     statusText: string;
     headers: any;
@@ -35,6 +38,7 @@ export interface RequxtResponse<T = any> {
     options: RequxtOptions;
     /** full `url` after parsed */
     fullUrl?: string;
+    originResponse?: T;
 };
 
 export interface RequxtError<T = any> extends Error {
@@ -48,8 +52,8 @@ export interface RequxtError<T = any> extends Error {
 }
 
 export interface RequxtMetadata {
-    method?: Method;
-    url?: string;
+    method: Method;
+    url: string;
     [field: string]: any;
 };
 
@@ -59,7 +63,7 @@ export interface RequxtData {
      * 
      * 配置 URL 查询参数
      */
-    query?: PlainObject;
+    query?: RequxtQuery;
 
     /**
      * Support URL path dynamic parameters
@@ -78,13 +82,13 @@ export interface RequxtData {
      * request({ url: `/user/${id}`, ... });
      * ```
      */
-    params?: PlainObject;
+    params?: RequxtParams;
     /**
      * request body data
      * 
      * 配置作为请求体正文发送的数据
      */
-    body?: BodyInit;
+    body?: RequxtBody;
     [field: string]: any;
 }
 
@@ -93,6 +97,9 @@ export interface RequxtData {
 export interface RequxtConfig<T = any> {
     baseURL?: string;
     headers?: any;
+
+    prefix?: string;
+    affix?: string;
 
     timeout?: number;
     timeoutErrorMessage?: string;
@@ -125,7 +132,8 @@ export interface RequxtInstance {
     interceptors: {
         request: InterceptorApi;
         response: InterceptorApi;
-    }
+    };
+    __requxtInstance: Requxt;
 };
 //#endregion
 
@@ -201,7 +209,7 @@ export interface AdapterInterface {
      * 
      * 将通用选项应用于适配器
      */
-    applyOptions(options: RequxtOptions): void;
+    applyOptions(options: RequxtConfig): void;
 };
 
 //#endregion
@@ -239,9 +247,9 @@ export interface Interceptors {
 
 export type Interceptor = RequestInterceptor | ResponseInterceptor;
 export interface RequestInterceptor {
-    <T>(options: T): { options: T };
+    <T>(options: T): { options: T } | Promise<{ options: T }>;
 };
 export interface ResponseInterceptor {
-    <T, K, P = any>(response: K, options: T): { response: P; options: T; };
+    <T, K, P = any>(response: K, options: T): { response: P; options: T; } | Promise<{ response: P; options: T; }>;
 };
 //#region

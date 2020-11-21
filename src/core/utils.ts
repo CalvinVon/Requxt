@@ -4,12 +4,16 @@ import {
     RequxtMappingInstance,
     RequxtOptions,
     RequxtConfig,
-    RequxtData
+    RequxtData,
+    AdapterConstructor
 } from "../types";
 import Requxt from "./requxt";
 
-const extend = (options?: RequxtOptions) => {
+const extend = (options?: RequxtConfig, adapterCtor?: AdapterConstructor) => {
     const ins = new Requxt(options);
+    if (adapterCtor) {
+        ins.adapt(adapterCtor);
+    }
     return {
         request: ins.build(),
         use: ins.use.bind(ins),
@@ -31,7 +35,28 @@ function mapper<T extends RequxtMetadataMapping>(request: RequxtInstance, metada
     return mapping;
 }
 
+
+function buildFullPath(requestedURL: string, baseURL?: string) {
+    if (baseURL && !isAbsoluteURL(requestedURL)) {
+        return combineURLs(requestedURL, baseURL);
+    }
+    return requestedURL;
+};
+
+function isAbsoluteURL(url: string): boolean {
+    // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+    // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+    // by any combination of letters, digits, plus, period, or hyphen.
+    return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+function combineURLs(relativeURL: string, baseURL?: string) {
+    return (baseURL || '').replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '');
+};
+
+
 export {
     extend,
-    mapper
+    mapper,
+    buildFullPath
 };

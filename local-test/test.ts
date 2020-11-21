@@ -1,4 +1,12 @@
-import { AbortController, AxiosRequestConfig, AxiosResponse, Creators, request, setOptions, use } from 'requxt-axios';
+import {
+    AbortController,
+    Creators,
+    extend,
+    FetchInterceptorOptions,
+    request,
+    setOptions,
+    use
+} from 'requxt-fetch';
 
 // use(async (context, next) => {
 //     console.log('m1 start');
@@ -40,15 +48,17 @@ const API = {
     user: Creators.GET('/user/:id/detail'),
 };
 
-request.interceptors.request.use((options: AxiosRequestConfig) => {
+request.interceptors.request.use(async (options: FetchInterceptorOptions) => {
     console.log('request interceptor 1');
     // options.url += '/i0';
+    await 1;
+    console.log('fake await request interceptor 1')
     return {
         options
     }
 });
 
-request.interceptors.request.use((options: AxiosRequestConfig) => {
+request.interceptors.request.use(async (options: FetchInterceptorOptions) => {
     console.log('request interceptor 2');
     // options.url += '/i1';
     return {
@@ -56,14 +66,14 @@ request.interceptors.request.use((options: AxiosRequestConfig) => {
     }
 });
 
-request.interceptors.request.use((options: AxiosRequestConfig) => {
+request.interceptors.request.use((options: FetchInterceptorOptions) => {
     console.log('request interceptor 3');
     // options.url += '/i1';
     return {
         options
     }
 });
-request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConfig) => {
+request.interceptors.response.use((res: Response, options: FetchInterceptorOptions) => {
     console.log('response interceptor 1');
     options;
     res;
@@ -72,23 +82,24 @@ request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConf
         response: res
     }
 });
-request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConfig) => {
+request.interceptors.response.use(async (res: Response, options: FetchInterceptorOptions) => {
     console.log('response interceptor 2');
     options;
-    res;
-    if (res.data.code !== 200) {
+    const clone = res.clone();
+    const resp = await res.json();
+    if (resp.data.code !== 200) {
         throw new Error('不是200！');
     }
     return {
         options,
-        response: res
+        response: clone
     }
 });
 
 const controller = new AbortController();
-setTimeout(() => {
-    controller.abort();
-}, 100);
+// setTimeout(() => {
+//     controller.abort();
+// }, 100);
 
 const res = request<{ a: string }>(
     API.user,
@@ -116,6 +127,7 @@ res
     .then(res => {
         // console.log(res);
         console.log('success');
+        console.log(res);
     })
     .catch(err => {
         console.log(err);
@@ -123,16 +135,15 @@ res
     })
 
 
-// const instance = extend();
-// instance.use(async (ctx, next) => {
-//     console.log('I am instance 2!');
-//     await next();
-// });
-// instance.adapter(axiosAdaptor);
-// instance.request({
-//     method: 'GET',
-//     url: ''
-// }).then(res => console.log(res))
+const instance = extend();
+instance.use(async (ctx, next) => {
+    console.log('I am instance 2!');
+    await next();
+});
+instance.request({
+    method: 'GET',
+    url: 'http://localhost:7000/user/998/detail'
+}).then(res => console.log(res))
 
 
 

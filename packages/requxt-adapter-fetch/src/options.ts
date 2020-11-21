@@ -1,14 +1,50 @@
-import { RequxtConfig } from "requxt";
+import { RequxtConfig, RequxtOptions } from "../../../src";
+import { TransformedOptions } from "./types";
 
-function applyOptions(options: RequxtConfig<RequestInit>): RequestInit {
+
+/**
+ * Merge options from `source` to `target`
+ */
+function mergeOptions(target: RequxtConfig, source: RequxtOptions): RequxtOptions {
+    const { headers, adapterOptions, ...others } = target;
+    const {
+        headers: sourceHeaders,
+        adapterOptions: sourceAdapterOptions,
+        ...sourceOthers
+    } = source;
+
+
+    return {
+        ...others,
+        ...sourceOthers,
+        headers: { ...headers, ...sourceHeaders },
+        adapterOptions: { ...adapterOptions, ...sourceAdapterOptions },
+    }
+}
+
+/**
+ * Transform requxt options to origin fetch options
+ */
+function transformOptions(options: RequxtOptions): TransformedOptions {
     const {
         cache,
-        credentials
+        credentials,
+        headers,
+        mode,
+        signal,
+
+        adapterOptions,
+        ...restOptions
     } = options;
 
     const fetchOptions: RequestInit = {
         cache,
+        headers,
+        mode,
+        signal,
+        ...adapterOptions
     };
+
 
     if (typeof credentials === 'boolean') {
         fetchOptions.credentials = 'include';
@@ -17,7 +53,14 @@ function applyOptions(options: RequxtConfig<RequestInit>): RequestInit {
         fetchOptions.credentials = credentials;
     }
 
-    return fetchOptions;
+    return {
+        fetchOptions,
+        requxtOptions: restOptions
+    };
 };
 
-export default applyOptions;
+
+export {
+    mergeOptions,
+    transformOptions
+}

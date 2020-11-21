@@ -1,12 +1,21 @@
-import { Context, Middleware, RequxtError } from "requxt";
+import { composeInterceptors, Context, FinalMiddleware, RequxtError, RequxtResponse } from "requxt";
+import FetchAdapter from ".";
+import { mergeOptions, transformOptions } from "./options";
+import { FetchInterceptorOptions } from "./types";
 
 
-
-function transformFetchConfig(context: Context): RequestInit {
-    const { } = context.options;
-
+async function transformFetchResponse(context: Context, originRespose: Response, response: any): Promise<RequxtResponse<Response, any>> {
+    if (response instanceof Response) {
+        response = await response.json();
+    }
     return {
-
+        data: response,
+        headers: originRespose.headers,
+        options: context.options,
+        status: originRespose.status,
+        statusText: originRespose.statusText,
+        fullUrl: originRespose.url,
+        originResponse: originRespose
     };
 }
 
@@ -23,14 +32,34 @@ function transformFetchError(context: Context, error: any): RequxtError {
     };
 }
 
+function applyCoreMiddleware(adapter: FetchAdapter) {
+    const coreMiddleware: FinalMiddleware = async (context: Context) => {
+        const intercepter = composeInterceptors(adapter.interceptors);
+        // merge optionss
+        const mergedOptions = mergeOptions(adapter.globalRequxtOptions, context.options);
+        // transform requxt options to available fetch options
+        // `requxtOptions` includes features that origin `fetch` do NOT contains
+        const { fetchOptions, requxtOptions } = transformOptions(mergedOptions);
 
-const coreMiddleware: Middleware = async (context: Context) => {
-    const fetchConfig: RequestInit = transformFetchConfig(context);
-    try {
-        const res: Response = await fetch(context.url, fetchConfig);
-    } catch (error) {
-        context.error = transformFetchError(context, error);
-    }
-};
+        // intercept request
+        const { options: fetchConfig } = await intercepter.request<FetchInterceptorOptions>({
+            url: context.url,
+            ...fetchOptions
+        });
 
-export default coreMiddleware;
+        try {
+            const originResponse: Response = await fetch(fetchConfig.url, fetchConfig);
+
+            // intercept response
+            const { response } = await intercepter.response(originResponse, fetchConfig);
+            context.response = await transformFetchResponse(context, originResponse, response);
+        } catch (error) {
+            context.error = transformFetchError(context, error);
+        }
+    };
+    return coreMiddleware;
+}
+
+
+
+export default applyCoreMiddleware;

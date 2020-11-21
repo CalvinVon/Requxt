@@ -79,16 +79,16 @@ export function composeInterceptors(interceptors: Interceptors) {
     const reqInterceptors = [...request].reverse();
     const resInterceptors = [...response].reverse();
     return {
-        request: reqInterceptors.reduce((a, b) => options => {
-            const brs = b(options);
-            const ars = a(brs.options);
+        request: reqInterceptors.reduce((a, b) => async options => {
+            const brs = await b(options);
+            const ars = await a(brs.options);
             return {
                 options: ars.options
             };
         }, noopRequestInterceptor),
-        response: resInterceptors.reduce((a, b) => (response, options) => {
-            const brs = b(response, options);
-            const ars = a(brs.response, brs.options);
+        response: resInterceptors.reduce((a, b) => async (response, options) => {
+            const brs = await b(response, options);
+            const ars = await a(brs.response, brs.options);
             return {
                 response: ars.response,
                 options: ars.options
