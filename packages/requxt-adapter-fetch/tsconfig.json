@@ -1,17 +1,17 @@
 {
-    "compilerOptions": {
-        "module": "CommonJS",
-        "declaration": true,
-        "strict": true,
-        "target": "ES6",
-        "lib": [
-            "DOM",
-            "ESNext",
-            "ES2017.Object"
-        ],
-        "outDir": "dist"
-    },
-    "include": [
-        "src/*",
-    ]
+  "compilerOptions": {
+    "module": "ESNext",
+    "declaration": true,
+    "strict": true,
+    "target": "ES6",
+    "lib": [
+      "DOM",
+      "ESNext",
+      "ES2017.Object"
+    ],
+    "outDir": "dist"
+  },
+  "include": [
+    "./src/*",
+  ]
 }

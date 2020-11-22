@@ -2,10 +2,11 @@
   "name": "requxt",
   "version": "0.0.1",
   "description": "An universal request tool that adapts to multiple request schemes, designed to provide a consistent and universal request efficiency scheme",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
+    "build": "tsc --outDir ./lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
