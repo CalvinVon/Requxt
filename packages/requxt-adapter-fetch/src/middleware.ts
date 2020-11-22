@@ -1,7 +1,8 @@
-import { composeInterceptors, Context, FinalMiddleware, RequxtError, RequxtResponse } from "requxt";
+import { composeInterceptors, Context, FinalMiddleware, RequxtError, RequxtQuery, RequxtResponse } from "requxt";
 import FetchAdapter from ".";
 import { mergeOptions, transformOptions } from "./options";
 import { FetchInterceptorOptions } from "./types";
+
 
 async function transformFetchResponse(context: Context, originRespose: Response, response: any): Promise<RequxtResponse<Response, any>> {
     if (response instanceof Response) {
@@ -27,9 +28,10 @@ function transformFetchError(context: Context, error: any): RequxtError<Response
         code: error.code,
         stack: error.stack,
         options: context.options,
-        fullUrl: context.url,
+        fullUrl: context.fullUrl,
     };
 }
+
 
 function applyCoreMiddleware(adapter: FetchAdapter) {
     const coreMiddleware: FinalMiddleware = async (context: Context) => {
@@ -42,7 +44,7 @@ function applyCoreMiddleware(adapter: FetchAdapter) {
 
         // intercept request
         const { options: fetchConfig } = await intercepter.request<FetchInterceptorOptions>({
-            url: context.url,
+            url: context.fullUrl,
             ...fetchOptions
         });
 

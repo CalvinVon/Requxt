@@ -10,10 +10,10 @@ function transformAxiosConfig(context: Context): AxiosRequestConfig {
     } = context.options as RequxtOptions<AxiosRequestConfig>;
 
     const options: AxiosRequestConfig = {
-        url: context.url,
+        url: context.fullUrl,
         method: context.method,
         data: context.body,
-        params: context.query,
+        // params: context.query,
         ...adapterOptions
     };
 
