@@ -64,7 +64,7 @@ function transformAxiosResponse(context: Context, response: AxiosResponse): Requ
         status: response.status,
         statusText: response.statusText,
         options: context.options,
-        fullUrl: context.url,
+        fullUrl: context.fullUrl,
     };
 }
 
