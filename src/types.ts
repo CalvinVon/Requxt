@@ -1,4 +1,4 @@
-import Context from "./core/context";
+import Context from "./core/Context";
 import Requxt from "./core/requxt";
 
 export type RequxtQuery = PlainObject;
