@@ -3,7 +3,6 @@ import FetchAdapter from ".";
 import { mergeOptions, transformOptions } from "./options";
 import { FetchInterceptorOptions } from "./types";
 
-
 async function transformFetchResponse(context: Context, originRespose: Response, response: any): Promise<RequxtResponse<Response, any>> {
     if (response instanceof Response) {
         response = await response.json();
@@ -20,7 +19,7 @@ async function transformFetchResponse(context: Context, originRespose: Response,
 }
 
 
-function transformFetchError(context: Context, error: any): RequxtError {
+function transformFetchError(context: Context, error: any): RequxtError<Response> {
     return {
         isRequxtError: true,
         message: error.message,

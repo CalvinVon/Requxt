@@ -41,9 +41,9 @@ export interface RequxtResponse<T = any, K = any> {
     originResponse?: T;
 };
 
-export interface RequxtError<T = any> extends Error {
+export interface RequxtError<T = any, K = any> extends Error {
     code?: string;
-    response?: RequxtResponse<T>;
+    response?: RequxtResponse<T, K>;
     isRequxtError: boolean;
     /** requxt `options` */
     options: RequxtOptions;
@@ -123,12 +123,12 @@ export interface RequxtConfig<T = any> {
 
 export type RequxtOptions<T = any> = RequxtMetadata & RequxtData & RequxtConfig<T>;
 
-export interface RequxtPromise<T = any> extends Promise<RequxtResponse<T>> { };
+export interface RequxtPromise<T, K = any> extends Promise<RequxtResponse<T, K>> { };
 
 export interface RequxtInstance {
-    <T = any>(options: RequxtOptions): RequxtPromise<T>;
-    <T = any>(metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
-    <T = any>(metadata: RequxtMetadata, options?: RequxtOptions): RequxtPromise<T>;
+    <T>(options: RequxtOptions): RequxtPromise<T>;
+    <T>(metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
+    <T>(metadata: RequxtMetadata, options?: RequxtOptions): RequxtPromise<T>;
     interceptors: {
         request: InterceptorApi;
         response: InterceptorApi;
