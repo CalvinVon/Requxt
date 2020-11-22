@@ -47,7 +47,7 @@ function transformOptions(options: RequxtOptions): TransformedOptions {
 
 
     if (typeof credentials === 'boolean') {
-        fetchOptions.credentials = 'include';
+        fetchOptions.credentials = credentials ? 'include' : 'omit';
     }
     else {
         fetchOptions.credentials = credentials;

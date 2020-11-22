@@ -16,6 +16,17 @@ import {
 import { applyAllInterceptors, useInterceptors } from "./interceptor";
 
 export default class Requxt {
+    static defaults: RequxtConfig = {
+        credentials: true,
+        mode: "cors",
+        responseType: "json",
+        timeout: 0,
+        validateStatus(status) {
+            return status >= 200 && status < 300;
+        }
+    };
+
+    defaults: RequxtConfig = Requxt.defaults;
     onion: Onion = new Onion();
     options?: RequxtConfig;
     adapter?: AdapterInterface;
@@ -83,7 +94,7 @@ export default class Requxt {
         if (this._executeHelper.setInterceptors) {
             applyAllInterceptors(adapter, this.interceptors);
         }
-        
+
         return this;
     }
 
@@ -100,6 +111,7 @@ export default class Requxt {
             config?: RequxtConfig
         ) => {
             const options: RequxtConfig = {
+                ...this.defaults,
                 ...this.options,
                 ...metadata,
                 ...data,

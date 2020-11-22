@@ -1,5 +1,5 @@
 import { Middleware, FinalMiddleware, NextMiddleware } from "../types";
-import Context from "./context";
+import Context from "./Context";
 
 export function compose(middlewares: Middleware[]): FinalMiddleware {
     return function (context: Context, next?: NextMiddleware) {

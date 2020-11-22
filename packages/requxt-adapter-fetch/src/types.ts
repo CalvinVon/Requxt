@@ -15,11 +15,3 @@ export interface TransformedOptions {
 export type FetchInterceptorOptions = RequestInit & {
     url: string;
 }
-
-
-// FIXME: delete me
-
-/** adapter extra options */
-type AdapterExtraOptions = keyof Omit<RequestInit, keyof RequxtConfig>;
-/** adapter needs to adapter */
-type NeedsToAdapter = keyof Omit<RequxtConfig, keyof RequestInit>;

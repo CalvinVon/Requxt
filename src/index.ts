@@ -1,5 +1,5 @@
 import Requxt from "./core/requxt";
-import Context from './core/context';
+import Context from './core/Context';
 import * as Creators from "./creators";
 export * from './core/interceptor';
 export * from "./core/utils";

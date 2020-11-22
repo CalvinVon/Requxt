@@ -98,8 +98,7 @@ export interface RequxtConfig<T = any> {
     baseURL?: string;
     headers?: any;
 
-    prefix?: string;
-    affix?: string;
+    // prefix?: string;
 
     timeout?: number;
     timeoutErrorMessage?: string;

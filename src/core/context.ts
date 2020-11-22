@@ -1,4 +1,5 @@
 import { RequxtMetadata, RequxtResponse, RequxtData, PlainObject, RequxtError, RequxtConfig, RequxtOptions } from '../types';
+import { parseUrl, stringifyUrl } from "query-string";
 import { buildFullPath } from './utils';
 
 export default class Context {
@@ -45,9 +46,11 @@ export default class Context {
 
 
     /**
-     * Get computed `url` string
+     * Get the `url` string after filling the `params` parameter, but does not include the `query` query string.
+     * This value is calculated in real time
      * 
-     * 获取计算过之后的 `url` 字符串
+     * 获取将 `params` 参数填入之后的 `url` 字符串，但是不包含 `query` 查询字符串。
+     * 此值为实时计算值
      */
     get url() {
         const { url, params, baseURL } = this.options;
@@ -63,6 +66,16 @@ export default class Context {
         else {
             return fullUrl;
         }
+    }
+
+    /**
+     * The full `url` string requested
+     * 
+     * 完整的请求 url 路径。
+     */
+    get fullUrl() {
+        const { url: parsedUrl, query: parsedQuery } = parseUrl(this.url);
+        return stringifyUrl({ url: parsedUrl, query: { ...parsedQuery, ...this.query } });
     }
 
     /**
