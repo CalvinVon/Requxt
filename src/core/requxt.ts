@@ -20,7 +20,7 @@ export default class Requxt {
         credentials: true,
         mode: "cors",
         responseType: "json",
-        timeout: 120 * 1000,
+        timeout: 0,
         validateStatus(status) {
             return status >= 200 && status < 300;
         }
