@@ -59,7 +59,7 @@ function transformAxiosConfig(context: Context): AxiosRequestConfig {
 
 function transformAxiosResponse(context: Context, response: AxiosResponse): RequxtResponse {
     return {
-        data: response,
+        data: response.data,
         headers: response.headers,
         status: response.status,
         statusText: response.statusText,
