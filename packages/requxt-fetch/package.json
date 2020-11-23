@@ -18,5 +18,8 @@
     "fetch"
   ],
   "author": "calvin_von",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.1.2"
+  }
 }
