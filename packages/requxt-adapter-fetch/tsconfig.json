@@ -9,9 +9,10 @@
       "ESNext",
       "ES2017.Object"
     ],
-    "outDir": "dist"
+    "outDir": "dist",
+    "moduleResolution": "node"
   },
   "include": [
-    "./src/*",
-  ]
+    "./src/**/*"
+  ],
 }

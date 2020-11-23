@@ -1,0 +1,30 @@
+{
+  "name": "requxt",
+  "version": "0.0.1",
+  "description": "An universal request tool that adapts to multiple request schemes, designed to provide a consistent and universal request efficiency scheme",
+  "main": "es/index.js",
+  "module": "es/index.js",
+  "types": "es/index.d.ts",
+  "scripts": {
+    "build:es": "tsc --outDir ./es",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "requxt",
+    "request",
+    "axios",
+    "fetch",
+    "miniprogram",
+    "adaptor",
+    "middlewares",
+    "interceptors"
+  ],
+  "author": "calvin_von",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "query-string": "^6.13.7"
+  }
+}

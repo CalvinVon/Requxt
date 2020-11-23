@@ -2,10 +2,11 @@
   "name": "requxt-axios",
   "version": "0.0.1",
   "description": "Requxt with axios",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "es/index.js",
+  "module": "es/index.js",
+  "types": "es/index.d.ts",
   "scripts": {
-    "build": "tsc --outDir ./lib",
+    "build:es": "tsc --outDir ./es",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

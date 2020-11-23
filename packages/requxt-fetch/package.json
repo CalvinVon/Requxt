@@ -2,11 +2,12 @@
   "name": "requxt-fetch",
   "version": "0.0.1",
   "description": "Requxt with fetch",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "es/index.js",
+  "module": "es/index.js",
+  "types": "es/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --outDir ./lib"
+    "build:es": "tsc --outDir ./es",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "requxt": "^0.0.1",

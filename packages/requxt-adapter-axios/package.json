@@ -2,9 +2,11 @@
   "name": "requxt-adapter-axios",
   "version": "0.0.1",
   "description": "Requxt adapter for axios",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "es/index.js",
+  "module": "es/index.js",
+  "types": "es/index.d.ts",
   "scripts": {
+    "build:es": "tsc --outDir ./es",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,9 +21,9 @@
     "axios": "^0.21.0"
   },
   "devDependencies": {
-    "requxt": "../../"
+    "requxt": "^0.0.1"
   },
   "peerDependencies": {
-    "requxt": ">=0.0.1"
+    "requxt": "^0.0.1"
   }
 }

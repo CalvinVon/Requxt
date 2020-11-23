@@ -19,6 +19,6 @@ class AxiosAdapter implements AdapterInterface {
 
 
 export * from './intercepter';
-export * from './abort-controller';
+export * from './abort';
 export * from 'axios';
 export default AxiosAdapter;
