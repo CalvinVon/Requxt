@@ -1,13 +1,17 @@
-import { RequxtMetadata, RequxtOptions, RequxtResponse, RequxtData, PlainObject, RequxtError } from '../types';
+import { RequxtMetadata, RequxtResponse, RequxtData, PlainObject, RequxtError, RequxtConfig, RequxtOptions } from '../types';
+import { parseUrl, stringifyUrl } from "query-string";
+import { buildFullPath } from './utils';
 
 export default class Context {
+
+    public options!: RequxtOptions;
 
     /**
      * The `metadata` (partial options) of request
      * 
      * 请求元数据（部分选项）
      */
-    public metadata: Readonly<RequxtOptions> & PlainObject = {};
+    public metadata: Readonly<RequxtConfig> & PlainObject;
 
     /**
      * The `response` data of request
@@ -30,33 +34,48 @@ export default class Context {
         /**
          * The requxt `options`
          */
-        public options: RequxtOptions
+        options: RequxtConfig
     ) {
         // avoid to modify origin metadata
         this.metadata = { ...metadata };
+        this.options = {
+            ...options,
+            ...metadata,
+        };
     }
 
 
     /**
-     * Get computed `url` string
+     * Get the `url` string after filling the `params` parameter, but does not include the `query` query string.
+     * This value is calculated in real time
      * 
-     * 获取计算过之后的 `url` 字符串
+     * 获取将 `params` 参数填入之后的 `url` 字符串，但是不包含 `query` 查询字符串。
+     * 此值为实时计算值
      */
     get url() {
         const { url, params, baseURL } = this.options;
-
-        if (!url) return baseURL;
+        const fullUrl = buildFullPath(url, baseURL);
 
         if (params) {
             // handle api like /a/:id/b/{param}
-            return (baseURL || '') + url
+            return fullUrl
                 .replace(/\B(?::(\w+)|{(\w+)})/g, (...args: string[]) => {
                     return params[args[1] || args[2]];
                 });
         }
         else {
-            return (baseURL || '') + url;
+            return fullUrl;
         }
+    }
+
+    /**
+     * The full `url` string requested
+     * 
+     * 完整的请求 url 路径。
+     */
+    get fullUrl() {
+        const { url: parsedUrl, query: parsedQuery } = parseUrl(this.url);
+        return stringifyUrl({ url: parsedUrl, query: { ...parsedQuery, ...this.query } });
     }
 
     /**

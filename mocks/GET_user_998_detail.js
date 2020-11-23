@@ -7,7 +7,12 @@ const data = {
     },
     "[[headers]]": {},
     "[[mock]]": true,
-    "[[status]]": 200
+    "[[status]]": 200,
+    data: {
+        username: 'calvin',
+        sex: 'male',
+        code: 200
+    }
 };
 
 module.exports = new Promise(resolve => {

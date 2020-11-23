@@ -10,19 +10,29 @@ import {
     RequxtConfig,
     RequxtResponse,
     RequxtPromise,
-    RequestInterceptor,
-    ResponseInterceptor,
-    AdapterConstructor
+    AdapterConstructor,
+    Interceptors
 } from "../types";
 import { applyAllInterceptors, useInterceptors } from "./interceptor";
 
 export default class Requxt {
+    static defaults: RequxtConfig = {
+        credentials: true,
+        mode: "cors",
+        responseType: "json",
+        timeout: 0,
+        validateStatus(status) {
+            return status >= 200 && status < 300;
+        }
+    };
+
+    defaults: RequxtConfig = Requxt.defaults;
     onion: Onion = new Onion();
-    options?: RequxtOptions;
+    options?: RequxtConfig;
     adapter?: AdapterInterface;
-    interceptors = {
-        request: [] as RequestInterceptor[],
-        response: [] as ResponseInterceptor[]
+    interceptors: Interceptors = {
+        request: [],
+        response: []
     };
 
     _executeHelper: {
@@ -31,7 +41,7 @@ export default class Requxt {
         setInterceptors?: boolean;
     } = {};
 
-    constructor(options?: RequxtOptions) {
+    constructor(options?: RequxtConfig) {
         if (options) {
             this.setOptions(options);
         }
@@ -42,7 +52,7 @@ export default class Requxt {
      * 
      * 为请求实例设置选项
      */
-    public setOptions(options: RequxtOptions): this {
+    public setOptions(options: RequxtConfig): this {
         if (this._executeHelper.setOptions) return this;
         this._executeHelper.setOptions = true;
 
@@ -84,7 +94,7 @@ export default class Requxt {
         if (this._executeHelper.setInterceptors) {
             applyAllInterceptors(adapter, this.interceptors);
         }
-        
+
         return this;
     }
 
@@ -100,7 +110,8 @@ export default class Requxt {
             data?: RequxtData | RequxtOptions,
             config?: RequxtConfig
         ) => {
-            const options: RequxtOptions = {
+            const options: RequxtConfig = {
+                ...this.defaults,
                 ...this.options,
                 ...metadata,
                 ...data,
@@ -124,6 +135,7 @@ export default class Requxt {
         };
 
         request.interceptors = useInterceptors(this);
+        request.__requxtInstance = this;
         return request;
     }
 }

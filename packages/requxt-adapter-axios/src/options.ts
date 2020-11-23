@@ -10,7 +10,7 @@ const applyOptions = (axios: AxiosInstance, options: RequxtConfig<AxiosRequestCo
     axios.defaults = {
         ...opt,
         ...adapterOptions,
-    };
+    } as AxiosRequestConfig;
 };
 
 export default applyOptions;

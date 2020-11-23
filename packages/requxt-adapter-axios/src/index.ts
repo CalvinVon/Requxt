@@ -1,4 +1,4 @@
-import { AdapterInterface, Interceptors, Requxt, RequxtOptions } from "requxt";
+import { AdapterInterface, Interceptors, Requxt, RequxtConfig } from "requxt";
 import axios from 'axios';
 import applyIntercepter from "./intercepter";
 import applyMiddleware from "./middleware";
@@ -12,13 +12,13 @@ class AxiosAdapter implements AdapterInterface {
     applyInterceptors(interceptors: Interceptors) {
         applyIntercepter(axios, interceptors);
     }
-    applyOptions(options: RequxtOptions) {
+    applyOptions(options: RequxtConfig) {
         applyOptions(axios, options);
     }
 }
 
 
 export * from './intercepter';
-export * from './abort-controller';
+export * from './abort';
 export * from 'axios';
 export default AxiosAdapter;

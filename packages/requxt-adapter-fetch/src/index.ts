@@ -1,25 +1,30 @@
 // https://www.cnblogs.com/fundebug/p/problems-of-fetch-and-solutions.html
 import 'isomorphic-fetch';
-import { AdapterInterface, Interceptors, Requxt, RequxtOptions } from 'requxt';
-import coreMiddleware from './middleware';
-import applyOptions from './options';
-
+import { AdapterInterface, Interceptors, Requxt, RequxtConfig } from 'requxt';
+import applyCoreMiddleware from './middleware';
+import { RequxtFetchConfig } from './types';
 
 class FetchAdapter implements AdapterInterface {
 
-    public globalFetchOptions: RequestInit;
+    public globalRequxtOptions: RequxtFetchConfig = {};
+    public interceptors: Interceptors = {
+        request: [],
+        response: []
+    };
 
     constructor(requxt: Requxt) {
-        requxt.onion.use(coreMiddleware, { core: true });
+        requxt.onion.use(applyCoreMiddleware(this), { core: true });
     }
 
-    applyOptions(options: RequxtOptions) {
-        this.globalFetchOptions = applyOptions(options);
+    applyOptions(options: RequxtConfig) {
+        this.globalRequxtOptions = options;
     }
 
     applyInterceptors(interceptors: Interceptors) {
-
+        this.interceptors = interceptors;
     }
 }
 
+export * from './abort';
+export * from './types';
 export default FetchAdapter;

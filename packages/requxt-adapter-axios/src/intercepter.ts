@@ -16,23 +16,23 @@ const applyIntercepter = (axios: AxiosInstance, interceptors: Interceptors) => {
         response: composedResponseInterceptor
     } = composeInterceptors(interceptors);
 
-    const requestInterceptor = (config: AxiosRequestConfig) => {
+    const requestInterceptor = async (config: AxiosRequestConfig) => {
         let options;
         try {
-            options = composedRequestInterceptor<AxiosRequestConfig>(config).options;
+            options = await composedRequestInterceptor<AxiosRequestConfig>(config);
         } catch (error) {
             console.error(error);
             return Promise.reject(error);
         }
-        return options;
+        return options.options;
     };
 
-    const responseInterceptor = (response: AxiosResponse) => {
+    const responseInterceptor = async (response: AxiosResponse) => {
         let res = response;
         let options = response.config;
 
         try {
-            const result = composedResponseInterceptor<AxiosRequestConfig, AxiosResponse>(res, options);
+            const result = await composedResponseInterceptor<AxiosRequestConfig, AxiosResponse>(res, options);
             res = result.response;
             options = result.options;
 

@@ -1,4 +1,12 @@
-import { AbortController, AxiosRequestConfig, AxiosResponse, Creators, request, setOptions, use } from 'requxt-axios';
+import {
+    AbortController,
+    Creators,
+    extend,
+    FetchInterceptorOptions,
+    request,
+    setOptions,
+    use
+} from 'requxt-fetch';
 
 // use(async (context, next) => {
 //     console.log('m1 start');
@@ -13,12 +21,14 @@ import { AbortController, AxiosRequestConfig, AxiosResponse, Creators, request, 
 use(async (context, next) => {
     console.log('m2 start');
     context.ts = 'ds';
-    // context.options.url = '/api';
-    context.query
-    context.data
+    if (context.query) {
+        context.query.customParams = 'customParams';
+    }
+
     context.metadata.aaa = 'post';
     // context.options = { method: 'PUT', url: '/api/options' };
     context.url
+    context.fullUrl
     await next();
     console.log('m2 end');
 });
@@ -32,23 +42,33 @@ use(async (context, next) => {
 
 setOptions({
     headers: { 'x-c': 'calvin' },
-    baseURL: 'http://localhost:7000'
+    baseURL: 'http://localhost:7000',
+    validateStatus() {
+        return true;
+    },
+    onDownloadProgress(e) {
+        console.log(`downloading ${e.loaded} of ${e.total}`);
+    }
+    // timeout: 500,
+    // timeoutErrorMessage: 'custom timeout error'
 });
 
 
 const API = {
-    user: Creators.GET('/user/:id/detail'),
+    user: Creators.GET('/user/:id/detail?initOption=init'),
 };
 
-request.interceptors.request.use((options: AxiosRequestConfig) => {
+request.interceptors.request.use(async (options: FetchInterceptorOptions) => {
     console.log('request interceptor 1');
     // options.url += '/i0';
+    await 1;
+    console.log('fake await request interceptor 1')
     return {
         options
     }
 });
 
-request.interceptors.request.use((options: AxiosRequestConfig) => {
+request.interceptors.request.use(async (options: FetchInterceptorOptions) => {
     console.log('request interceptor 2');
     // options.url += '/i1';
     return {
@@ -56,14 +76,14 @@ request.interceptors.request.use((options: AxiosRequestConfig) => {
     }
 });
 
-request.interceptors.request.use((options: AxiosRequestConfig) => {
+request.interceptors.request.use((options: FetchInterceptorOptions) => {
     console.log('request interceptor 3');
     // options.url += '/i1';
     return {
         options
     }
 });
-request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConfig) => {
+request.interceptors.response.use((res: Response, options: FetchInterceptorOptions) => {
     console.log('response interceptor 1');
     options;
     res;
@@ -72,23 +92,24 @@ request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConf
         response: res
     }
 });
-request.interceptors.response.use((res: AxiosResponse, options: AxiosRequestConfig) => {
+request.interceptors.response.use(async (res: Response, options: FetchInterceptorOptions) => {
     console.log('response interceptor 2');
     options;
-    res;
-    if (res.data.code !== 200) {
+    const clone = res.clone();
+    const resp = await res.json();
+    if (resp.data.code !== 200) {
         throw new Error('不是200！');
     }
     return {
         options,
-        response: res
+        response: clone
     }
 });
 
 const controller = new AbortController();
-setTimeout(() => {
-    controller.abort();
-}, 100);
+// setTimeout(() => {
+//     controller.abort();
+// }, 100);
 
 const res = request<{ a: string }>(
     API.user,
@@ -102,20 +123,12 @@ const res = request<{ a: string }>(
     }
 );
 
-// request(
-//     API.user,
-//     {
-//         body: { ok: 1 },
-//         query: { a: 2 },
-//         params: { id: 998 }
-//     }
-// );
-
 
 res
     .then(res => {
         // console.log(res);
         console.log('success');
+        console.log(res);
     })
     .catch(err => {
         console.log(err);
@@ -126,13 +139,20 @@ res
 // const instance = extend();
 // instance.use(async (ctx, next) => {
 //     console.log('I am instance 2!');
+//     ctx;
 //     await next();
 // });
-// instance.adapter(axiosAdaptor);
 // instance.request({
 //     method: 'GET',
-//     url: ''
-// }).then(res => console.log(res))
+//     url: 'http://localhost:7000/user/777/detail',
+//     query: {
+//         ts: Date.now()
+//     }
+// })
+//     .then(res => console.log(res))
+//     .catch(error => {
+//         console.error(error)
+//     })
 
 
 

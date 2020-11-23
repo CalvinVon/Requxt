@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "requxt-axios": "../packages/requxt-axios"
+    "requxt-axios": "requxt-axios",
+    "requxt-fetch": "requxt-fetch"
   },
   "keywords": [],
   "author": "",
