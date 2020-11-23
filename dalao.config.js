@@ -9,7 +9,7 @@ module.exports = {
         "/": {
             "path": "/",
             "changeOrigin": true,
-            "target": "http://target.example.com",
+            "target": "http://www.baidu.com",
             "pathRewrite": {}
         }
     },
