@@ -1,25 +1,13 @@
 import React from 'react';
-import { request } from 'requxt-fetch';
 import '../../services/configureRequxt';
-import UserApi from '../../services/user-api';
+import request from '../../services/user-api';
+
+
 
 export default class FetchDemo extends React.Component {
 
   sendRequest = () => {
-    request(UserApi.list, {
-      params: {
-        id: 998
-      },
-      query: {
-        ts: Date.now()
-      }
-    }, {
-      onDownloadProgress(e) {
-        console.log(`downloading ${e.loaded} of ${e.total}`);
-      },
-      responseType: 'document'
-      // timeout: 500
-    })
+    request.user({ params: { id: 998 } })
       .then(res => {
         // console.log(res);
         console.log(res);

@@ -1,8 +1,13 @@
-import { Creators } from 'requxt-fetch';
+import { Creators, mapper, request } from 'requxt-fetch';
 
-const APIs = {
+const userApi = {
   list: Creators.GET('/user/list'),
   user: Creators.GET('/user/:id/detail?initOption=init'),
 };
 
-export default APIs;
+const req = mapper(request, userApi);
+export default req;
+
+export {
+  userApi
+};
