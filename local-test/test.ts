@@ -21,12 +21,14 @@ import {
 use(async (context, next) => {
     console.log('m2 start');
     context.ts = 'ds';
-    // context.options.url = '/api';
-    context.query
-    context.data
+    if (context.query) {
+        context.query.customParams = 'customParams';
+    }
+
     context.metadata.aaa = 'post';
     // context.options = { method: 'PUT', url: '/api/options' };
     context.url
+    context.fullUrl
     await next();
     console.log('m2 end');
 });
@@ -40,12 +42,20 @@ use(async (context, next) => {
 
 setOptions({
     headers: { 'x-c': 'calvin' },
-    baseURL: 'http://localhost:7000'
+    baseURL: 'http://localhost:7000',
+    validateStatus() {
+        return true;
+    },
+    onDownloadProgress(e) {
+        console.log(`downloading ${e.loaded} of ${e.total}`);
+    }
+    // timeout: 500,
+    // timeoutErrorMessage: 'custom timeout error'
 });
 
 
 const API = {
-    user: Creators.GET('/user/:id/detail'),
+    user: Creators.GET('/user/:id/detail?initOption=init'),
 };
 
 request.interceptors.request.use(async (options: FetchInterceptorOptions) => {
@@ -113,15 +123,6 @@ const res = request<{ a: string }>(
     }
 );
 
-// request(
-//     API.user,
-//     {
-//         body: { ok: 1 },
-//         query: { a: 2 },
-//         params: { id: 998 }
-//     }
-// );
-
 
 res
     .then(res => {
@@ -135,15 +136,23 @@ res
     })
 
 
-const instance = extend();
-instance.use(async (ctx, next) => {
-    console.log('I am instance 2!');
-    await next();
-});
-instance.request({
-    method: 'GET',
-    url: 'http://localhost:7000/user/998/detail'
-}).then(res => console.log(res))
+// const instance = extend();
+// instance.use(async (ctx, next) => {
+//     console.log('I am instance 2!');
+//     ctx;
+//     await next();
+// });
+// instance.request({
+//     method: 'GET',
+//     url: 'http://localhost:7000/user/777/detail',
+//     query: {
+//         ts: Date.now()
+//     }
+// })
+//     .then(res => console.log(res))
+//     .catch(error => {
+//         console.error(error)
+//     })
 
 
 

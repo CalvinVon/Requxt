@@ -1,4 +1,4 @@
-import { composeInterceptors, Context, FinalMiddleware, PlainObject, RequxtError, RequxtQuery, RequxtResponse } from "requxt";
+import { composeInterceptors, Context, FinalMiddleware, PlainObject, RequxtError, RequxtResponse } from "requxt";
 import FetchAdapter from ".";
 import { mergeOptions, transformOptions } from "./options";
 import { FetchInterceptorOptions } from "./types";
@@ -65,7 +65,7 @@ function timeout2Throw(timeout?: number, timeoutErrorMessage?: string): Promise<
  * Simulate progress events
  * @reference https://jakearchibald.com/2016/streams-ftw/
  */
-function applyBodyReadProgress(response: Response, listener: (progressEvent: ProgressEvent) => void) {
+function applyBodyReadProgress(response: Response) {
     const reader = response.body?.getReader();
     let bytesReceived = 0;
 
@@ -131,7 +131,7 @@ function applyCoreMiddleware(adapter: FetchAdapter) {
             // TODO: onDownloadProgress/onUploadProgress
             // different between node and browser
             if (onDownloadProgress) {
-                applyBodyReadProgress(originResponse, onDownloadProgress);
+                applyBodyReadProgress(originResponse);
             }
 
             // intercept response

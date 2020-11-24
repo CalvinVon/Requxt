@@ -25,6 +25,6 @@ class FetchAdapter implements AdapterInterface {
     }
 }
 
-export * from './abort-controller';
+export * from './abort';
 export * from './types';
 export default FetchAdapter;

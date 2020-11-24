@@ -1,4 +1,4 @@
-import { RequxtConfig, RequxtOptions } from "../../../src";
+import { RequxtConfig, RequxtOptions } from "requxt";
 import { TransformedOptions } from "./types";
 
 
