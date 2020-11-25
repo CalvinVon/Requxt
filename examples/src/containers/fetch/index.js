@@ -7,7 +7,7 @@ import request from '../../services/user-api';
 export default class FetchDemo extends React.Component {
 
   sendRequest = () => {
-    request.user({ params: { id: 998 } })
+    request.user({ params: { id: 998 }, query: 123 })
       .then(res => {
         // console.log(res);
         console.log(res);
