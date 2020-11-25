@@ -1,6 +1,6 @@
-import { RequxtMetadata, RequxtResponse, RequxtData, PlainObject, RequxtError, RequxtConfig, RequxtOptions } from '../types';
+import { RequxtMetadata, RequxtResponse, RequxtData, PlainObject, RequxtError, RequxtConfig, RequxtOptions, RequxtQuery, RequxtParams, RequxtBody } from '../types';
 import { parseUrl, stringifyUrl } from "query-string";
-import { buildFullPath } from './utils';
+import { buildFullPath, isObject } from './utils';
 
 export default class Context {
 
@@ -34,14 +34,26 @@ export default class Context {
         /**
          * The requxt `options`
          */
-        options: RequxtConfig
+        options: RequxtOptions
     ) {
         // avoid to modify origin metadata
         this.metadata = { ...metadata };
         this.options = {
             ...options,
             ...metadata,
+            ...this.parseData(options)
         };
+    }
+
+    private parseData(options: RequxtData): RequxtData {
+        // ensure requxt data exsit
+        const { query, params, body } = options;
+
+        return {
+            query: isObject(query) ? query : {},
+            params: isObject(params) ? params : {},
+            body: body || {}
+        }
     }
 
 
@@ -114,7 +126,11 @@ export default class Context {
      * 访问请求 url 地址参数对配置
      */
     get query() {
-        return this.options.query;
+        return this.options.query!;
+    }
+
+    set query(value: RequxtQuery) {
+        this.options.query = value;
     }
 
 
@@ -124,7 +140,11 @@ export default class Context {
      * 访问请求 url 查询参数配置
      */
     get params() {
-        return this.options.params;
+        return this.options.params!;
+    }
+
+    set params(value: RequxtParams) {
+        this.options.params = value;
     }
 
     /**
@@ -133,6 +153,10 @@ export default class Context {
      * 访问请求体数据包配置
      */
     get body() {
-        return this.options.body;
+        return this.options.body!;
+    }
+
+    set body(value: RequxtBody) {
+        this.options.body = value;
     }
 }

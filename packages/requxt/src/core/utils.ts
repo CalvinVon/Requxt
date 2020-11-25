@@ -54,9 +54,14 @@ function combineURLs(relativeURL: string, baseURL?: string) {
     return (baseURL || '').replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '');
 };
 
+function isObject (value: any) {
+    return Object.prototype.toString.call(value) === '[object Object]';
+}
+
 
 export {
     extend,
     mapper,
-    buildFullPath
+    buildFullPath,
+    isObject
 };

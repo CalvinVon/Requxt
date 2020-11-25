@@ -110,7 +110,7 @@ export default class Requxt {
             data?: RequxtData | RequxtOptions,
             config?: RequxtConfig
         ) => {
-            const options: RequxtConfig = {
+            const options: RequxtOptions = {
                 ...this.defaults,
                 ...this.options,
                 ...metadata,
