@@ -35,7 +35,6 @@ export function useInterceptors(instance: Requxt) {
                 applyInterceptors();
             },
             ejectAll: () => {
-                const former = instance.interceptors.request;
                 instance.interceptors.request = [];
                 applyInterceptors();
             }
@@ -58,7 +57,6 @@ export function useInterceptors(instance: Requxt) {
                 applyInterceptors();
             },
             ejectAll: () => {
-                const former = instance.interceptors.response;
                 instance.interceptors.response = [];
                 applyInterceptors();
             }

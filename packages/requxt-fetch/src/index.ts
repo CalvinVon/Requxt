@@ -1,8 +1,14 @@
-import { setAdapter, use, extend as _extend, RequxtConfig } from "requxt";
+import { extend as _extend, RequxtConfig, AdapterConstructor } from "requxt";
 import FetchAdaptor from "requxt-adapter-fetch";
 export * from 'requxt';
 
+const extend = (options?: RequxtConfig, adapterCtor: AdapterConstructor = FetchAdaptor) => _extend(options, adapterCtor);
+const { request, setAdapter, use } = _extend();
 setAdapter(FetchAdaptor);
-export const extend = (options?: RequxtConfig) => _extend(options, FetchAdaptor);
 
 export * from "requxt-adapter-fetch";
+export {
+    request,
+    use,
+    extend
+}
