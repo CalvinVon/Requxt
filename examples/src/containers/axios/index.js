@@ -1,10 +1,11 @@
 import React from 'react';
 import request from './configureRequxt';
 
-export default class FetchDemo extends React.Component {
+
+export default class AxiosDemo extends React.Component {
 
   sendRequest = () => {
-    request.user({ params: { id: 998 } }, { headers: { 'x-by': 'fetch' } })
+    request.user({ params: { id: 998 }, query: 123 })
       .then(res => {
         // console.log(res);
         console.log(res);
@@ -19,7 +20,7 @@ export default class FetchDemo extends React.Component {
   render() {
     return (
       <div>
-        <h1>I am Fetch Demo</h1>
+        <h1>I am axios Demo</h1>
         <button onClick={this.sendRequest}>Send request</button>
       </div>
     )

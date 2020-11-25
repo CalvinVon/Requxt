@@ -3,9 +3,9 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
+  Link,
 } from 'react-router-dom';
-import routers from '../routers';
+import routes from '../routers';
 
 export default class Main extends React.Component {
   render() {
@@ -14,11 +14,22 @@ export default class Main extends React.Component {
         <Router>
           <Switch>
             <Route path="/" exact={true}>
-              <Redirect to="/fetch"></Redirect>
+              <h1>Menu</h1>
+              <div>
+                <ul>
+                  {
+                    routes.map(it => (
+                      <li key={it.path}>
+                        <Link to={it.path}>{it.path}</Link>
+                      </li>
+                    ))
+                  }
+                </ul>
+              </div>
             </Route>
 
             {
-              routers.map(route => {
+              routes.map(route => {
                 const Cmp = route.component;
                 return (
                   <Route
