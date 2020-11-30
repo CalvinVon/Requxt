@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "debug-ts": "PKG_TARGET=src node ./scripts/switchPackageTarget.js",
+    "reset-es": "PKG_TARGET=es node ./scripts/switchPackageTarget.js"
   },
   "dependencies": {
     "requxt-axios": "requxt-axios",

@@ -5,6 +5,9 @@ setOptions({
   baseURL: 'http://localhost:7000',
   headers: {
     'X-Custom-Header': 'Requxt extends fetch'
+  },
+  onDownloadProgress(e) {
+    console.log(e.total, e.loaded);
   }
 });
 
