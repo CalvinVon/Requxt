@@ -18,6 +18,10 @@ const extend = (options?: RequxtConfig, adapterCtor?: AdapterConstructor) => {
         request: ins.build(),
         use: ins.use.bind(ins),
         setAdapter: ins.adapt.bind(ins),
+        setOptions: (opts: RequxtConfig) => ins.setOptions({
+            ...options,
+            ...opts
+        })
     }
 };
 

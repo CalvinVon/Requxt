@@ -7,7 +7,7 @@ import AxiosAdaptor, {
 } from "requxt-adapter-axios";
 
 const extend = (options?: RequxtConfig, adapterCtor: AdapterConstructor = AxiosAdaptor) => _extend(options, adapterCtor);
-const { request, setAdapter, use } = _extend();
+const { request, setAdapter, use, setOptions } = _extend();
 setAdapter(AxiosAdaptor);
 
 export * from 'requxt';
@@ -18,5 +18,6 @@ export {
     AbortSignal,
     request,
     use,
-    extend
+    extend,
+    setOptions
 }

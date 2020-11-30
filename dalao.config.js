@@ -4,7 +4,11 @@ module.exports = {
     "port": 7000,
     "target": "target.example.com",
     "changeOrigin": true,
-    "headers": {},
+    "headers": {
+        response: {
+            'Access-Control-Allow-Headers': 'x-by, X-Custom-Header'
+        }
+    },
     "proxyTable": {
         "/": {
             "path": "/",

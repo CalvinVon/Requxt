@@ -37,7 +37,6 @@ export default class Requxt {
 
     _executeHelper: {
         adapt?: boolean;
-        setOptions?: boolean;
         setInterceptors?: boolean;
     } = {};
 
@@ -53,9 +52,6 @@ export default class Requxt {
      * 为请求实例设置选项
      */
     public setOptions(options: RequxtConfig): this {
-        if (this._executeHelper.setOptions) return this;
-        this._executeHelper.setOptions = true;
-
         this.options = options;
         if (this._executeHelper.adapt) {
             this.adapter?.applyOptions(this.options);
