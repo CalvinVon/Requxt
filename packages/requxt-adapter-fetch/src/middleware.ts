@@ -66,7 +66,8 @@ function timeout2Throw(timeout?: number, timeoutErrorMessage?: string): Promise<
  * @reference https://jakearchibald.com/2016/streams-ftw/
  */
 function applyBodyReadProgress(response: Response) {
-    const reader = response.body?.getReader();
+    const res = response.clone();
+    const reader = res.body?.getReader();
     let bytesReceived = 0;
 
     // read() returns a promise that resolves when a value has been received
