@@ -1,5 +1,6 @@
-import { Interceptors, InterceptorApi, RequestInterceptor, ResponseInterceptor, AdapterInterface } from "../types";
-import Requxt from "./requxt";
+import { Interceptors, InterceptorApi, RequestInterceptor, ResponseInterceptor } from "../types";
+import { Adapter } from "./Adapter";
+import Requxt from "./Requxt";
 
 const noopRequestInterceptor: RequestInterceptor = (options: any) => ({ options });
 const noopResponseInterceptor: ResponseInterceptor = (response: any, options: any) => ({ response, options });
@@ -38,7 +39,7 @@ export function useInterceptors(instance: Requxt) {
                 instance.interceptors.request = [];
                 applyInterceptors();
             }
-        } as InterceptorApi,
+        },
 
         /**
          * Request interceptor
@@ -60,15 +61,15 @@ export function useInterceptors(instance: Requxt) {
                 instance.interceptors.response = [];
                 applyInterceptors();
             }
-        } as InterceptorApi
+        }
     }
 }
 
 
-export function applyAllInterceptors(adapter: AdapterInterface, interceptors: Interceptors) {
+export function applyAllInterceptors(adapter: Adapter, interceptors: Interceptors) {
     const { request, response } = interceptors;
-    request.forEach(it => adapter.applyInterceptors(interceptors));
-    response.forEach(it => adapter.applyInterceptors(interceptors));
+    request.forEach(it => adapter.setInterceptors(interceptors));
+    response.forEach(it => adapter.setInterceptors(interceptors));
 }
 
 

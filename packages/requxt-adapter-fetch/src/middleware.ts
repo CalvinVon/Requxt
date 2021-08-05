@@ -1,6 +1,6 @@
-import { composeInterceptors, Context, FinalMiddleware, PlainObject, RequxtError, RequxtResponse } from "requxt";
+import { composeInterceptors, Context, FinalMiddleware, PlainObject, RequxtError, RequxtResponse } from "requxt-core";
 import FetchAdapter from ".";
-import { mergeOptions, transformOptions } from "./options";
+import { transformOptions } from "./options";
 import { FetchInterceptorOptions } from "./types";
 
 
@@ -93,11 +93,9 @@ function applyBodyReadProgress(response: Response) {
 function applyCoreMiddleware(adapter: FetchAdapter) {
     const coreMiddleware: FinalMiddleware = async (context: Context) => {
         const intercepter = composeInterceptors(adapter.interceptors);
-        // merge optionss
-        const mergedOptions = mergeOptions(adapter.globalRequxtOptions, context.options);
         // transform requxt options to available fetch options
         // `requxtOptions` includes features that origin `fetch` do NOT contains
-        const { fetchOptions, requxtOptions } = transformOptions(mergedOptions);
+        const { fetchOptions, requxtOptions } = transformOptions(context.options);
 
         // intercept request
         const { options: fetchConfig } = await intercepter.request<FetchInterceptorOptions>({

@@ -1,19 +1,21 @@
-import { AdapterInterface, Interceptors, Requxt, RequxtConfig } from "requxt";
-import axios from 'axios';
+import { Interceptors } from "requxt-core";
+import axios, { AxiosInstance } from 'axios';
 import applyIntercepter from "./intercepter";
 import applyMiddleware from "./middleware";
-import applyOptions from "./options";
+import { Adapter, AdapterAPI } from "requxt-core";
 
-class AxiosAdapter implements AdapterInterface {
-    constructor(requxt: Requxt) {
-        const coreMiddleware = applyMiddleware(axios);
-        requxt.onion.use(coreMiddleware, { core: true });
-    };
-    applyInterceptors(interceptors: Interceptors) {
-        applyIntercepter(axios, interceptors);
+class AxiosAdapter extends Adapter {
+    public axios!: AxiosInstance;
+
+    run(api: AdapterAPI) {
+        const axiosInstance = this.axios = axios.create();
+        const coreMiddleware = applyMiddleware(axiosInstance);
+
+        api.use(coreMiddleware);
     }
-    applyOptions(options: RequxtConfig) {
-        applyOptions(axios, options);
+
+    applyInterceptors(interceptors: Interceptors) {
+        applyIntercepter(this.axios, interceptors);
     }
 }
 

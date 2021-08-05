@@ -1,60 +1,6 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { Context, Middleware, RequxtError, RequxtOptions, RequxtResponse } from "requxt";
-
-function transformAxiosConfig(context: Context): AxiosRequestConfig {
-    const {
-        cache,
-        credentials,
-        adapterOptions,
-        signal
-    } = context.options as RequxtOptions<AxiosRequestConfig>;
-
-    const options: AxiosRequestConfig = {
-        url: context.fullUrl,
-        method: context.method,
-        data: context.body,
-        // params: context.query,
-        ...adapterOptions
-    };
-
-    // adapter credentials
-    if (credentials === 'include') {
-        options.withCredentials = true;
-    }
-    else if (credentials === 'omit') {
-        options.withCredentials = false;
-    }
-
-
-    // adapter cache
-    if (context.method?.toUpperCase() === 'GET' || context.method?.toUpperCase() === 'HEAD') {
-        if (cache === 'no-store' || cache === 'no-cache') {
-            // Search for a '_' parameter in the query string
-            const reParamSearch = /([?&])_=[^&]*/;
-            if (reParamSearch.test(context.url || '')) {
-                // If it already exists then set the value with the current time
-                options.url = (options.url || '').replace(reParamSearch, '$1_=' + new Date().getTime());
-            }
-            else {
-                // Otherwise add a new '_' parameter to the end with the current time
-                const reQueryString = /\?/;
-                options.url += (reQueryString.test(options.url || '') ? '&' : '?') + '_=' + new Date().getTime();
-            }
-        }
-    }
-
-
-    // adapter signal
-    if (signal) {
-        const { cancel, token } = axios.CancelToken.source();
-        signal.addEventListener('abort', () => {
-            cancel('The user aborted a request.');
-        });
-        options.cancelToken = token;
-    }
-
-    return options;
-}
+import { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { Context, Middleware, RequxtError, RequxtResponse } from "requxt-core";
+import { transformAxiosConfig } from "./options";
 
 
 function transformAxiosResponse(context: Context, response: AxiosResponse): RequxtResponse {
@@ -87,11 +33,11 @@ function transformAxiosError(context: Context, error: AxiosError): RequxtError {
     return requxtError;
 }
 
-const applyMiddleware = (axios: AxiosInstance) => {
+const applyMiddleware = (axiosInstance: AxiosInstance) => {
     const coreMiddleware: Middleware = async (context: Context) => {
         const axiosConfig: AxiosRequestConfig = transformAxiosConfig(context);
         try {
-            const res = await axios(axiosConfig);
+            const res = await axiosInstance(axiosConfig);
             context.response = transformAxiosResponse(context, res);
         } catch (err) {
             context.error = transformAxiosError(context, err);

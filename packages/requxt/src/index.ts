@@ -1,22 +1,78 @@
-import Requxt from "./core/requxt";
-import Context from './core/Context';
-import * as Creators from "./creators";
-export * from './core/interceptor';
-export * from "./core/utils";
-export * from './types';
+import { extend as _extend } from 'requxt-core';
+import { AdapterConstructor } from 'requxt-core';
+import { RequxtAdapter, RequxtOptions } from './interface';
 
-const instance = new Requxt();
-const use = instance.use.bind(instance);
-const setAdapter = instance.adapt.bind(instance);
-const setOptions = instance.setOptions.bind(instance);
-const request = instance.build();
+function extend(options?: RequxtOptions) {
+    const instance = _extend();
+    const { request, use } = instance;
+    let onReadyFn: undefined | (() => void);
 
-export {
-    Requxt,
-    Context,
-    Creators,
+    if (options) {
+        setOptions(options);
+    }
+
+    function onReady(fn: () => void) {
+        onReadyFn = fn;
+
+        if (request.requxt.adapter) {
+            onReadyFn();
+        }
+    }
+
+    async function setOptions(options: RequxtOptions) {
+        if (options.adapter) {
+            await setAdapter(options.adapter);
+            delete options.adapter;
+        }
+        instance.setOptions(options);
+    }
+
+    async function setAdapter(adapter: RequxtAdapter) {
+
+        let adapterCtor: AdapterConstructor;
+        switch (adapter) {
+            case 'axios':
+                adapterCtor = (await import(/* webpackChunkName: 'requxt__adapter-axios' */'requxt-adapter-axios')).default;
+                break;
+
+            case 'fetch':
+                adapterCtor = (await import(/* webpackChunkName: 'requxt__adapter-fetch' */'requxt-adapter-fetch')).default;
+                break;
+
+            default:
+                console.warn('[Requxt] No specific adapter found!');
+                break;
+        }
+
+        if (adapterCtor!) {
+            instance.setAdapter(adapterCtor);
+            onReadyFn && onReadyFn();
+        }
+    }
+
+    return {
+        request,
+        use,
+        onReady,
+        setOptions,
+        setAdapter
+    }
+}
+
+const {
     request,
     use,
-    setAdapter,
+    onReady,
     setOptions,
-};
+    setAdapter
+} = extend();
+
+export * from 'requxt-core';
+export {
+    extend,
+    request,
+    use,
+    onReady,
+    setOptions,
+    setAdapter
+}

@@ -1,4 +1,4 @@
-import { RequxtConfig, RequxtMetadata, RequxtData } from 'requxt';
+import { RequxtConfig, RequxtMetadata, RequxtData } from "requxt-core";
 
 export interface RequxtFetchConfig extends RequxtConfig {
     headers?: HeadersInit;

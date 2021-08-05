@@ -2,7 +2,6 @@ import Context from "./Context";
 import Onion from "./Onion";
 import {
     Middleware,
-    AdapterInterface,
     RequxtInstance,
     RequxtOptions,
     RequxtMetadata,
@@ -10,10 +9,11 @@ import {
     RequxtConfig,
     RequxtResponse,
     RequxtPromise,
-    AdapterConstructor,
     Interceptors
 } from "../types";
 import { applyAllInterceptors, useInterceptors } from "./interceptor";
+import { mergeOptions } from "./utils";
+import { Adapter, AdapterAPI, AdapterConstructor } from "./Adapter";
 
 export default class Requxt {
     static defaults: RequxtConfig = {
@@ -28,8 +28,8 @@ export default class Requxt {
 
     defaults: RequxtConfig = Requxt.defaults;
     onion: Onion = new Onion();
-    options?: RequxtConfig;
-    adapter?: AdapterInterface;
+    options: RequxtConfig = {};
+    adapter?: Adapter;
     interceptors: Interceptors = {
         request: [],
         response: []
@@ -41,9 +41,12 @@ export default class Requxt {
     } = {};
 
     constructor(options?: RequxtConfig) {
-        if (options) {
-            this.setOptions(options);
-        }
+        this.setOptions(options);
+
+        Object.defineProperty(this, '_executeHelper', {
+            enumerable: false,
+            value: {}
+        });
     }
 
     /**
@@ -51,10 +54,13 @@ export default class Requxt {
      * 
      * 为请求实例设置选项
      */
-    public setOptions(options: RequxtConfig): this {
-        this.options = options;
+    public setOptions(options?: RequxtConfig): this {
+        this.options = {
+            ...this.defaults,
+            ...options
+        };
         if (this._executeHelper.adapt) {
-            this.adapter?.applyOptions(this.options);
+            this.adapter?.setOptions(this.options);
         }
         return this;
     }
@@ -72,19 +78,16 @@ export default class Requxt {
     /**
      * Use specific request adaptor
      * 
-     * 使用特定方案的请求适配器
+     * 使用特定方案的请求适配器。
      */
     public adapt(ctor: AdapterConstructor): this {
-        if (this._executeHelper.adapt) {
-            console.warn('You can only instantiate one adapter on each instance');
-            return this;
-        }
+        this.onion.cleanCoreMiddlewares();
         this._executeHelper.adapt = true;
-
-        const adapter = this.adapter = new ctor(this);
+        const adapterApi = new AdapterAPI(this);
+        const adapter = this.adapter = new ctor(adapterApi);
 
         if (this.options) {
-            adapter.applyOptions(this.options);
+            adapter.setOptions(this.options);
         }
 
         if (this._executeHelper.setInterceptors) {
@@ -106,13 +109,11 @@ export default class Requxt {
             data?: RequxtData | RequxtOptions,
             config?: RequxtConfig
         ) => {
-            const options: RequxtOptions = {
-                ...this.defaults,
-                ...this.options,
+            const options = mergeOptions(this.options, {
                 ...metadata,
                 ...data,
                 ...config
-            };
+            });
             const final = this.onion.compose();
             const ctx = new Context(metadata, options);
 
@@ -131,7 +132,7 @@ export default class Requxt {
         };
 
         request.interceptors = useInterceptors(this);
-        request.__requxtInstance = this;
+        request.requxt = this;
         return request;
     }
 }

@@ -1,5 +1,5 @@
 import Context from "./core/Context";
-import Requxt from "./core/requxt";
+import Requxt from "./core/Requxt";
 
 export type RequxtQuery = PlainObject;
 export type RequxtParams = PlainObject;
@@ -129,10 +129,10 @@ export interface RequxtInstance {
     <T>(metadata: RequxtMetadata, data?: RequxtData, config?: RequxtConfig): RequxtPromise<T>;
     <T>(metadata: RequxtMetadata, options?: RequxtOptions): RequxtPromise<T>;
     interceptors: {
-        request: InterceptorApi;
-        response: InterceptorApi;
+        request: RequestInterceptorApi;
+        response: ResponseInterceptorApi;
     };
-    __requxtInstance: Requxt;
+    requxt: Requxt;
 };
 //#endregion
 
@@ -180,39 +180,6 @@ export interface FinalMiddleware {
 //#endregion
 
 
-//#region requxt adapter related
-export interface AdapterConstructor {
-    new(requxt: Requxt): AdapterInterface;
-}
-/**
- * You should first implement the `AdapterInterface` interface.
- * 
- * An adapter should apply instance options and interceptors to core request,
- * and implements core middleware(s).
- * 
- * 编写适配器首先应实现 `AdapterInterface` 接口
- * 
- * 适配器应将实例选项和拦截器应用于核心请求，并实现核心中间件
- */
-export interface AdapterInterface {
-
-    /**
-     * Apply interceptors to adapter
-     * 
-     * 将拦截器应用于适配器
-     */
-    applyInterceptors(interceptors: Interceptors): void;
-
-    /**
-     * Apply requxt options to the adapter
-     * 
-     * 将通用选项应用于适配器
-     */
-    applyOptions(options: RequxtConfig): void;
-};
-
-//#endregion
-
 //#region interceptor
 
 export interface InterceptorApi {
@@ -221,7 +188,7 @@ export interface InterceptorApi {
      * 
      * 添加单个拦截器
      */
-    use: <T>(handler: T) => number;
+    use: (handler: any) => number;
 
     /**
      * Remove single interceptor by ID
@@ -238,13 +205,21 @@ export interface InterceptorApi {
     ejectAll: () => void;
 };
 
+export interface RequestInterceptorApi extends InterceptorApi {
+    use: (handler: RequestInterceptor) => number;
+}
+
+export interface ResponseInterceptorApi extends InterceptorApi {
+    use: (handler: ResponseInterceptor) => number;
+}
+
 
 export interface Interceptors {
     request: RequestInterceptor[];
     response: ResponseInterceptor[];
 };
 
-export type Interceptor = RequestInterceptor | ResponseInterceptor;
+// export type Interceptor = RequestInterceptor & ResponseInterceptor;
 export interface RequestInterceptor {
     <T>(options: T): { options: T } | Promise<{ options: T }>;
 };

@@ -1,4 +1,4 @@
-import { composeInterceptors, Interceptors } from "requxt";
+import { composeInterceptors, Interceptors } from "requxt-core";
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 interface AxiosInterceptorManager<V> {

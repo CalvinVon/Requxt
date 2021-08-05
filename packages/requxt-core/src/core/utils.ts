@@ -5,9 +5,9 @@ import {
     RequxtOptions,
     RequxtConfig,
     RequxtData,
-    AdapterConstructor
 } from "../types";
-import Requxt from "./requxt";
+import { AdapterConstructor } from "./Adapter";
+import Requxt from "./Requxt";
 
 const extend = (options?: RequxtConfig, adapterCtor?: AdapterConstructor) => {
     const ins = new Requxt(options);
@@ -62,10 +62,30 @@ function isObject (value: any) {
     return Object.prototype.toString.call(value) === '[object Object]';
 }
 
+/**
+ * Merge options from `source` to `target`
+ */
+function mergeOptions(target: RequxtConfig, source: RequxtOptions): RequxtOptions {
+    const { headers, adapterOptions, ...others } = target;
+    const {
+        headers: sourceHeaders,
+        adapterOptions: sourceAdapterOptions,
+        ...sourceOthers
+    } = source;
+
+
+    return {
+        ...others,
+        ...sourceOthers,
+        headers: { ...headers, ...sourceHeaders },
+        adapterOptions: { ...adapterOptions, ...sourceAdapterOptions },
+    }
+}
 
 export {
     extend,
     mapper,
     buildFullPath,
-    isObject
+    isObject,
+    mergeOptions
 };

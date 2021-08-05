@@ -1,3 +1,8 @@
 node_modules/
 es/
 lib/
+
+dalao.config.js
+.dalao-cache/
+local-test/
+mocks/
